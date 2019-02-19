@@ -53,6 +53,7 @@ module syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode);
                 pause <= 0;
         end
 
+
     always
         @(posedge clk)
         begin
