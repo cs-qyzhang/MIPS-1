@@ -19,8 +19,8 @@ module controller_test();
   wire jr, jmp, jal;
   wire lui, mflo;
   wire hlen;
-  wire mode;
-  wire b_branch;
+  wire [1 : 0] mode;
+  wire [1 : 0] b_branch;
 
   controller controller_tb(
     .op_code(op_code),
