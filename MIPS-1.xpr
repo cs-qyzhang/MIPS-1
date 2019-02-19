@@ -3,11 +3,7 @@
 <!--                                                         -->
 <!-- Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.   -->
 
-<<<<<<< HEAD
 <Project Version="7" Minor="38" Path="/home/qyzhang/Projects/MIPS-1/MIPS-1.xpr">
-=======
-<Project Version="7" Minor="38" Path="C:/Users/freedom_fu/OneDrive/组原实验/MIPS-1/MIPS-1.xpr">
->>>>>>> 35a58042966b84639ee04c87ec8f5abd0598bc64
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
     <Option Name="Id" Val="56978a00200d49e8bea23eb8a9dcdd71"/>
@@ -121,9 +117,13 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-<<<<<<< HEAD
       <File Path="$PSRCDIR/src/pc.v">
-=======
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <File Path="$PSRCDIR/src/Branch.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -146,7 +146,6 @@
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/src/Extender.v">
->>>>>>> 35a58042966b84639ee04c87ec8f5abd0598bc64
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -194,12 +193,8 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-<<<<<<< HEAD
       <File Path="$PSRCDIR/sim/syscall_test.v">
-=======
-      <File Path="$PSRCDIR/sim/Register.v">
         <FileInfo>
-          <Attr Name="UserDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -227,7 +222,6 @@
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sim/Shifter_Test.v">
->>>>>>> 35a58042966b84639ee04c87ec8f5abd0598bc64
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -256,11 +250,17 @@
     <Simulator Name="Questa">
       <Option Name="Description" Val="Questa Advanced Simulator"/>
     </Simulator>
+    <Simulator Name="IES">
+      <Option Name="Description" Val="Incisive Enterprise Simulator (IES)"/>
+    </Simulator>
+    <Simulator Name="Xcelium">
+      <Option Name="Description" Val="Xcelium Parallel Simulator"/>
+    </Simulator>
+    <Simulator Name="VCS">
+      <Option Name="Description" Val="Verilog Compiler Simulator (VCS)"/>
+    </Simulator>
     <Simulator Name="Riviera">
       <Option Name="Description" Val="Riviera-PRO Simulator"/>
-    </Simulator>
-    <Simulator Name="ActiveHDL">
-      <Option Name="Description" Val="Active-HDL Simulator"/>
     </Simulator>
   </Simulators>
   <Runs Version="1" Minor="10">
