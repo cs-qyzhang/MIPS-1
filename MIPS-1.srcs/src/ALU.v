@@ -26,7 +26,7 @@ module ALU(A,B,Shmat,AluOp,Equal,Result,Result2);
 
     assign Equal = (A == B) ? 1 : 0;
 
-    wire[1:0]       mdu_op;
+    reg[1:0]        mdu_op;
     wire[31:0]      mdu_hi, mdu_lo;
     MDU mdu(
         .A(A),
@@ -39,23 +39,23 @@ module ALU(A,B,Shmat,AluOp,Equal,Result,Result2);
     always
         @(AluOp, A, B)
         begin
+            deassign Result;
+            deassign Result2;
             case (AluOp)
                 4'b0000: begin Result <= A << Shmat; Result2 <= 0; end
                 4'b0001: begin Result <= A >>> Shmat; Result2 <= 0; end
                 4'b0010: begin Result <= A >> Shmat; Result2 <= 0; end
                 4'b0011: //乘法
                     begin
-                        mdu_op = MDU_MUL;
-                        // lo,hi产生时间与赋值时间顺序？
-                        Result <= mdu_lo;
-                        Result2 <= mdu_hi;
+                        mdu_op = `MDU_MUL;
+                        assign Result = mdu_lo;
+                        assign Result2 = mdu_hi;
                     end
                 4'b0100: // 除法
                     begin
-                        mdu_op = MDU_DIV;
-                        // lo,hi产生时间与赋值时间顺序？
-                        Result <= mdu_lo;
-                        Result2 <= mdu_hi;
+                        mdu_op = `MDU_DIV;
+                        assign Result = mdu_lo;
+                        assign Result2 = mdu_hi;
                     end
                 4'b0101: begin Result <= A + B; Result2 <= 0; end
                 4'b0110: begin Result <= A - B; Result2 <= 0; end
@@ -68,7 +68,7 @@ module ALU(A,B,Shmat,AluOp,Equal,Result,Result2);
                 //4'b1101:
                 //4'b1110:
                 //4'b1111:
-                default: begin Result <= 0; Result2 <= 0;
+                default: begin Result <= 0; Result2 <= 0; end
             endcase
         end
 
@@ -86,27 +86,29 @@ endmodule
  *      HI:
  */
 module MDU(op,A,B,LO,HI);
-    input[1:0]  op;
-    input[31:0] A, B;
-    output[31:0]LO,HI;
+    input[1:0]      op;
+    input[31:0]     A, B;
+    output reg[31:0]LO,HI;
 
-    reg[63:0]   mul_result;
+    reg[63:0]       mul_result;
 
     always
+        @(op, A, B)
         begin
             case (op)
-                MDU_NOP:
-                MDU_MUL:
+                `MDU_NOP: ;
+                `MDU_MUL:
                     begin
                         mul_result = A * B;
                         LO <= mul_result[31:0];
                         HI <= mul_result[63:32];
                     end
-                MDU_DIV:
+                `MDU_DIV:
                     begin
                         LO <= A / B;
                         HI <= A % B;
                     end
+                default: ;
             endcase
         end
 endmodule
