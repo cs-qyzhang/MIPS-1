@@ -12,6 +12,6 @@
  * output:
  *
  */
-module print(data,prints,print_mode);
+module print();
     
 endmodule

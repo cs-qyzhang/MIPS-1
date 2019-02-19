@@ -19,7 +19,7 @@
  *      npc: next pc
  *
  */
-module npc(pc,clk,rst,imm,imm26,branch,rs,jr,jmp,npc);
+module Npc(pc,clk,rst,imm,imm26,branch,rs,jr,jmp,npc);
     input[31:0]     pc, rs;
     input           clk, rst, branch, jr, jmp;
     input[25:0]     imm26;
@@ -38,17 +38,11 @@ module npc(pc,clk,rst,imm,imm26,branch,rs,jr,jmp,npc);
         @(posedge clk)
         begin
             if (branch)
-                begin
-                    npc <= {14'b00, imm, 2'b00} + pc + 4;
-                end
+                npc <= {14'b00, imm, 2'b00} + pc + 4;
             else if (jr)
-                begin
-                    npc <= rs;
-                end
+                npc <= rs;
             else if (jmp)
-                begin
-                    npc <= {pc[31:28], imm26, 2'b00};
-                end
+                npc <= {pc[31:28], imm26, 2'b00};
             else
                 npc <= pc + 4;
         end
