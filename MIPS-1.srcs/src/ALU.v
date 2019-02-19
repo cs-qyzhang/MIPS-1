@@ -26,8 +26,9 @@ module ALU(A,B,Shmat,AluOp,Equal,Result,Result2);
 
     assign Equal = (A == B) ? 1 : 0;
 
-    reg[1:0]        mdu_op;
+    reg[3:0]        mdu_op;
     wire[31:0]      mdu_hi, mdu_lo;
+
     MDU mdu(
         .A(A),
         .B(B),
@@ -41,33 +42,31 @@ module ALU(A,B,Shmat,AluOp,Equal,Result,Result2);
         begin
             deassign Result;
             deassign Result2;
+
             case (AluOp)
-                4'b0000: begin Result <= A << Shmat; Result2 <= 0; end
-                4'b0001: begin Result <= A >>> Shmat; Result2 <= 0; end
-                4'b0010: begin Result <= A >> Shmat; Result2 <= 0; end
-                4'b0011: //乘法
+                `ALU_SLL: begin Result <= A << Shmat; Result2 <= 0; end
+                `ALU_SRA: begin Result <= $signed(A) >>> Shmat; Result2 <= 0; end
+                `ALU_SRL: begin Result <= A >> Shmat; Result2 <= 0; end
+                `ALU_MUL:
                     begin
                         mdu_op = `MDU_MUL;
                         assign Result = mdu_lo;
                         assign Result2 = mdu_hi;
                     end
-                4'b0100: // 除法
+                `ALU_DIV:
                     begin
                         mdu_op = `MDU_DIV;
                         assign Result = mdu_lo;
                         assign Result2 = mdu_hi;
                     end
-                4'b0101: begin Result <= A + B; Result2 <= 0; end
-                4'b0110: begin Result <= A - B; Result2 <= 0; end
-                4'b0111: begin Result <= A & B; Result2 <= 0; end
-                4'b1000: begin Result <= A | B; Result2 <= 0; end
-                4'b1001: begin Result <= A ^ B; Result2 <= 0; end
-                4'b1010: begin Result <= ~(A | B); Result2 <= 0; end
-                4'b1011: begin Result <= ($signed(A) < $signed(B)) ? 1 : 0; Result2 <= 0; end
-                4'b1100: begin Result <= ($unsigned(A) < $unsigned(B)) ? 1 : 0; Result2 <= 0; end
-                //4'b1101:
-                //4'b1110:
-                //4'b1111:
+                `ALU_ADD: begin Result <= A + B; Result2 <= 0; end
+                `ALU_SUB: begin Result <= A - B; Result2 <= 0; end
+                `ALU_AND: begin Result <= A & B; Result2 <= 0; end
+                `ALU_OR:  begin Result <= A | B; Result2 <= 0; end
+                `ALU_XOR: begin Result <= A ^ B; Result2 <= 0; end
+                `ALU_NOR: begin Result <= ~(A | B); Result2 <= 0; end
+                `ALU_SLT: begin Result <= ($signed(A) < $signed(B)) ? 1 : 0; Result2 <= 0; end
+                `ALU_SLTU: begin Result <= ($unsigned(A) < $unsigned(B)) ? 1 : 0; Result2 <= 0; end
                 default: begin Result <= 0; Result2 <= 0; end
             endcase
         end
@@ -86,7 +85,7 @@ endmodule
  *      HI:
  */
 module MDU(op,A,B,LO,HI);
-    input[1:0]      op;
+    input[3:0]      op;
     input[31:0]     A, B;
     output reg[31:0]LO,HI;
 
@@ -99,14 +98,25 @@ module MDU(op,A,B,LO,HI);
                 `MDU_NOP: ;
                 `MDU_MUL:
                     begin
-                        mul_result = A * B;
+                        mul_result = $signed(A) * $signed(B);
+                        LO <= mul_result[31:0];
+                        HI <= mul_result[63:32];
+                    end
+                `MDU_MULU:
+                    begin
+                        mul_result = $unsigned(A) * $unsigned(B);
                         LO <= mul_result[31:0];
                         HI <= mul_result[63:32];
                     end
                 `MDU_DIV:
                     begin
-                        LO <= A / B;
-                        HI <= A % B;
+                        LO <= $signed(A) / $signed(B);
+                        HI <= $signed(A) % $signed(B);
+                    end
+                `MDU_DIVU:
+                    begin
+                        LO <= $unsigned(A) / $unsigned(B);
+                        HI <= $unsigned(A) % $unsigned(B);
                     end
                 default: ;
             endcase
