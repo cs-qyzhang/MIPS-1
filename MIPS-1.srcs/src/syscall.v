@@ -28,7 +28,7 @@ module syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode);
     reg can_go;
 
     // 实例化print，注意print和syscall触发沿应错开
-    print prints();
+    //print prints();
 
     initial
         begin
