@@ -21,24 +21,31 @@ module ALU_test();
 
     initial
         begin
-            A = 10;
+            A = -10;
             B = 8;
+            Shmat = 18;
             AluOp = `ALU_ADD;
             #5
-            AluOp = `ALU_AND;
+            AluOp = `ALU_SUB;
             #5
             AluOp = `ALU_MUL;
             #5
             AluOp = `ALU_DIV;
             #5
+            AluOp = `ALU_AND;
+            #5
             AluOp = `ALU_OR;
             #5
             AluOp = `ALU_NOR;
             #5
-            AluOp = `ALU_SLL;
-            #5
             AluOp = `ALU_SLT;
             #5
+            AluOp = `ALU_SLTU;
+            #5
+            AluOp = `ALU_SLL;
+            #5
             AluOp = `ALU_SRA;
+            #5
+            AluOp = `ALU_SRL;
         end
 endmodule
