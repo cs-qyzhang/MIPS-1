@@ -27,6 +27,9 @@ module syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode);
 
     reg can_go;
 
+    // 实例化print，注意print和syscall触发沿应错开
+    print prints();
+
     initial
         begin
             led_data   <= 0;
@@ -37,7 +40,7 @@ module syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode);
         end
 
     always
-        @(rst)
+        @(posedge rst)
         begin
             led_data   <= 0;
             pause      <= 0;
@@ -47,7 +50,7 @@ module syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode);
         end
 
     always
-        @(go)
+        @(posedge go)
         begin
             if (can_go)
                 pause <= 0;
