@@ -18,7 +18,7 @@
  *      print: 打印信号
  *      print_mode: 打印模式
  */
-module syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode);
+module Syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode);
     input           clk, rst, syscall, go;
     input[31:0]     a0, v0;
     output reg[31:0]led_data;

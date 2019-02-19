@@ -19,7 +19,7 @@
  *      npc: next pc
  *
  */
-module npc(pc,clk,rst,imm,imm26,branch,rs,jr,jmp,npc);
+module Npc(pc,clk,rst,imm,imm26,branch,rs,jr,jmp,npc);
     input[31:0]     pc, rs;
     input           clk, rst, branch, jr, jmp;
     input[25:0]     imm26;
