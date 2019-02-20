@@ -14,9 +14,9 @@
  *      led:
  *
  */
-module Main(clk, an, seg);
-    input       clk;
-    input[7:0]  an, seg;
+module Main(clk, btnl, btnr, an, seg);
+    input       clk, btnl, btnr;
+    output[7:0]  an, seg;
 
     wire[31:0]  pc, lo_out;
     wire        rst;
@@ -71,7 +71,12 @@ module Main(clk, an, seg);
     assign go = 1;
     assign rst = 0;
 `else
-    divider #(10000) divider(clk, cp);
+    Divider #(10000) divider(
+        .clk(clk),
+        .clk_n(cp)
+    );
+    assign go = btnr;
+    assign rst = btnl;
 `endif
 
     Pc reg_pc(
@@ -236,7 +241,7 @@ module Main(clk, an, seg);
     assign ins_addr = pc[`ADDR_WIDTH-1:0];
 
     assign ra   = syscall ? 5'd4 : rs;
-    assign rb   = (|B) ? 5'd0 : (syscall ? 5'd2 : rt);
+    assign rb   = (|b_branch) ? 5'd0 : (syscall ? 5'd2 : rt);
     assign rw   = jal ? 5'h1f : (RegDst ? rd : rt);
 
     assign A    = R1;
