@@ -33,7 +33,7 @@ module Npc(pc,clk,rst,imm,imm26,branch,rs,jr,jmp,npc);
         end
 
     always
-        @(negedge clk or posedge rst)
+        @(negedge clk)
         begin
             if (rst)
                 npc <= 0;

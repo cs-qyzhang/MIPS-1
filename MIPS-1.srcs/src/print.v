@@ -20,7 +20,7 @@ module Print(data,prints,print_mode,clk,an,seg);
     
     input [SHOW_WIDTH-1:0]data;
     input prints,clk;
-    input print_mode;
+    input[3:0] print_mode;
     output reg [7:0]an;
     output  [7:0]seg;
     
@@ -36,8 +36,6 @@ module Print(data,prints,print_mode,clk,an,seg);
             show_data<=0;
             show_number<=0;
         end
-
-
         
     always @(negedge clk_n)
         begin

@@ -14,12 +14,12 @@
  *      led:
  *
  */
-module Main(clk, an, seg,rst);
-    input       clk, rst;
+module Main(clk, an, seg);
+    input       clk;
     input[7:0]  an, seg;
 
     wire[31:0]  pc, lo_out;
-    
+    wire        rst;
     wire        cp;
 
     wire[5:0]   op, func;
@@ -69,6 +69,7 @@ module Main(clk, an, seg,rst);
 `ifdef  DEBUG
     assign cp = clk;
     assign go = 1;
+    assign rst = 0;
 `else
     divider #(10000) divider(clk, cp);
 `endif
@@ -130,13 +131,13 @@ module Main(clk, an, seg,rst);
     Extender zero_extender(
         .Din(imm),
         .Dout(imm_zero_ext),
-        .sel(0)
+        .sel(1'b0)
     );
 
     Extender sign_extender(
         .Din(imm),
         .Dout(imm_sign_ext),
-        .sel(1)
+        .sel(1'b1)
     );
 
     assign rom_sel = 1;
@@ -190,7 +191,7 @@ module Main(clk, an, seg,rst);
     );
 
     Branch branchs(
-        .R(result),
+        .R(result[0]),
         .Equal(equal),
         .beq(beq),
         .bne(bne),

@@ -37,7 +37,7 @@ module Syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode);
         end
 
     always
-        @(negedge clk or posedge rst or posedge go)
+        @(negedge clk)
         begin
             print <= 0;
 
