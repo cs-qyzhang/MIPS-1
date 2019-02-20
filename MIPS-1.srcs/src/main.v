@@ -54,17 +54,23 @@ module main(clk);
     wire[31:0]  led_data;
     wire[3:0]   print_mode;
 
+`ifdef  DEBUG
+    assign cp = clk;
+`else
+    divider #(1000) divider(clk, cp);
+`endif
+
     Pc pc(
         .npc(npc),
         .rst(rst),
-        .clk(clk),
+        .clk(cp),
         .pc_valid(pc_valid),
         .pc(pc)
     );
 
     Npc npc(
         .pc(pc),
-        .clk(clk),
+        .clk(cp),
         .rst(rst),
         .imm(imm),
         .imm26(imm26),
@@ -102,7 +108,7 @@ module main(clk);
     );
 
     Syscall syscall(
-        .clk(clk),
+        .clk(cp),
         .rst(rst),
         .syscall(syscall),
         .go(go),
@@ -121,7 +127,7 @@ module main(clk);
     );
 
     RegFile regfile(
-        .clk(clk),
+        .clk(cp),
         .ra(ra),
         .rb(rb),
         .rw(rw),
