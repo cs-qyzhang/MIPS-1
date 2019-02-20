@@ -159,6 +159,8 @@ module Controller(
                     mflo |
                     lb | lbu | lh | lhu;
   assign SignedExt = addi | addiu |
+                      beq | bne |
+                      blez | bgtz | bltz | bgez |
                       slti |
                       lw | sw |
                       sltiu |

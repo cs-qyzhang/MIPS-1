@@ -54,10 +54,10 @@ module ALU(A,B,Shmat,AluOp,Equal,result,result2);
         begin
             mul_or_div = 0;
             case (AluOp)
-                `ALU_SLL: begin Result = A << Shmat; Result2 = 0; end
-                `ALU_SRL: begin Result = A >> Shmat;  Result2 = 0; end
+                `ALU_SLL: begin Result = B << $unsigned(Shmat); Result2 = 0; end
+                `ALU_SRL: begin Result = B >> Shmat;  Result2 = 0; end
                 `ALU_SRA: begin
-                                Result = $signed(A) >>> Shmat;
+                                Result = $signed(B) >>> Shmat;
                                 Result2 = 0;
                           end
                 `ALU_MUL:

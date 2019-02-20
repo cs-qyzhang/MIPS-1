@@ -92,4 +92,4 @@
 `define         MFLO_FUNC   6'd18
 
 // Adder width
-`define         ADDR_WIDTH  10
+`define         ADDR_WIDTH  20
