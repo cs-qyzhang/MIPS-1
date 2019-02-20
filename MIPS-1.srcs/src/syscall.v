@@ -81,7 +81,7 @@ module syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode);
                         `SYS_PBIN:
                             begin
                                 led_data   <= a0;
-                                print      <= 1;
+                                print      <= 1; 
                                 print_mode <= `PRINT_BIN;
                             end
                         `SYS_PHEX:
