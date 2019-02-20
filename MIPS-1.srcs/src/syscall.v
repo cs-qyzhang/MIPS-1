@@ -18,7 +18,7 @@
  *      print: 打印信号
  *      print_mode: 打印模式
  */
-module syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode);
+module Syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode);
     input           clk, rst, syscall, go;
     input[31:0]     a0, v0;
     output reg[31:0]led_data;
@@ -26,6 +26,9 @@ module syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode);
     output reg[3:0] print_mode;
 
     reg can_go;
+
+    // 实例化print，注意print和syscall触发沿应错开
+    //print prints();
 
     initial
         begin
@@ -37,7 +40,7 @@ module syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode);
         end
 
     always
-        @(rst)
+        @(posedge rst)
         begin
             led_data   <= 0;
             pause      <= 0;
@@ -47,7 +50,7 @@ module syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode);
         end
 
     always
-        @(go)
+        @(posedge go)
         begin
             if (can_go)
                 pause <= 0;

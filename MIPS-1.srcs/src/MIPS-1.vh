@@ -40,3 +40,53 @@
 `define         PRINT_DEC   4'b0000     // 有符号10进制打印
 `define         PRINT_HEX   4'b0001     // 有符号16进制打印
 `define         PRINT_BIN   4'b0010     // 有符号2进制打印
+
+// op_code
+`define         ZERO_OP     6'd0        //R型指令op_code
+`define         J_OP        6'd2        
+`define         JAL_OP      6'd3        
+`define         BEQ_OP      6'd4        
+`define         BNE_OP      6'd5
+`define         ADDI_OP     6'd8
+`define         ANDI_OP     6'd12
+`define         ADDIU_OP    6'd9
+`define         SLTI_OP     6'd10
+`define         ORI_OP      6'd13
+`define         LW_OP       6'd35
+`define         SW_OP       6'd43
+`define         XORI_OP     6'd14
+`define         LUI_OP      6'd15
+`define         SLTIU_OP    6'd11
+`define         LB_OP       6'd32
+`define         LBU_OP      6'd36
+`define         LH_OP       6'd33
+`define         LHU_OP      6'd37
+`define         SB_OP       6'd40
+`define         SH_OP       6'd41
+`define         BLEZ_OP     6'd6
+`define         BGTZ_OP     6'd7
+`define         BLTZ_OP     6'd1
+`define         BGEZ_OP     6'd1
+
+// func
+`define         SLL_FUNC    6'd0
+`define         SRA_FUNC    6'd3
+`define         SRL_FUNC    6'd2
+`define         ADD_FUNC    6'd32
+`define         ADDU_FUNC   6'd33
+`define         SUB_FUNC    6'd34
+`define         AND_FUNC    6'd36
+`define         OR_FUNC     6'd37
+`define         NOR_FUNC    6'd39
+`define         SLT_FUNC    6'd42
+`define         SLTU_FUNC   6'd43
+`define         JR_FUNC     6'd8
+`define         SYS_FUNC    6'd12
+`define         SLLV_FUNC   6'd4
+`define         SRLV_FUNC   6'd6
+`define         SRAV_FUNC   6'd7
+`define         SUBU_FUNC   6'd35
+`define         XOR_FUNC    6'd38
+`define         MULTU_FUNC  6'd25
+`define         DIVU_FUNC   6'd27
+`define         MFLO_FUNC   6'd18

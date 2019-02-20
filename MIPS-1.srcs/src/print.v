@@ -14,6 +14,7 @@
  *      seg 
  *      
  */
+<<<<<<< HEAD
 module print(data,prints,print_mode,clk,an,seg);
     parameter SHOW_WIDTH=32;
     parameter LED0=0,LED1=1,LED2=2,LED3=3,LED4=4,LED5=5,LED6=6,LED7=7;
@@ -121,6 +122,9 @@ endmodule
 module pattern(code, patt);
     input [3: 0] code;            
     output reg [7:0] patt;            
+=======
+module print();
+>>>>>>> 30061e11f1c866acec9fb5715ebc80412da3e215
     
 
     always
