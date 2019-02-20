@@ -4,6 +4,8 @@
  */
 `timescale  1 ns / 1 ps
 
+`define         DEBUG
+
 `define         TRUE        1
 `define         FALSE       0
 

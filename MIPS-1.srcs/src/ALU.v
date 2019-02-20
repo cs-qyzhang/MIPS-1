@@ -40,13 +40,13 @@ module ALU(A,B,Shmat,AluOp,Equal,Result,Result2);
     always
         @(AluOp, A, B)
         begin
-            deassign Result;
-            deassign Result2;
-
             case (AluOp)
-                `ALU_SLL: begin Result <= A << Shmat; Result2 <= 0; end
-                `ALU_SRA: begin Result <= $signed(A) >>> Shmat; Result2 <= 0; end
-                `ALU_SRL: begin Result <= A >> Shmat; Result2 <= 0; end
+                `ALU_SLL: begin assign Result = A << Shmat; assign Result2 = 0; end
+                `ALU_SRL: begin assign Result = A >> Shmat; assign Result2 = 0; end
+                `ALU_SRA: begin
+                                assign Result = $signed(A) >>> Shmat;
+                                assign Result2 = 0;
+                          end
                 `ALU_MUL:
                     begin
                         mdu_op = `MDU_MUL;
@@ -59,15 +59,21 @@ module ALU(A,B,Shmat,AluOp,Equal,Result,Result2);
                         assign Result = mdu_lo;
                         assign Result2 = mdu_hi;
                     end
-                `ALU_ADD: begin Result <= A + B; Result2 <= 0; end
-                `ALU_SUB: begin Result <= A - B; Result2 <= 0; end
-                `ALU_AND: begin Result <= A & B; Result2 <= 0; end
-                `ALU_OR:  begin Result <= A | B; Result2 <= 0; end
-                `ALU_XOR: begin Result <= A ^ B; Result2 <= 0; end
-                `ALU_NOR: begin Result <= ~(A | B); Result2 <= 0; end
-                `ALU_SLT: begin Result <= ($signed(A) < $signed(B)) ? 1 : 0; Result2 <= 0; end
-                `ALU_SLTU: begin Result <= ($unsigned(A) < $unsigned(B)) ? 1 : 0; Result2 <= 0; end
-                default: begin Result <= 0; Result2 <= 0; end
+                `ALU_ADD:  begin assign Result = A + B;    assign Result2 = 0; end
+                `ALU_SUB:  begin assign Result = A - B;    assign Result2 = 0; end
+                `ALU_AND:  begin assign Result = A & B;    assign Result2 = 0; end
+                `ALU_OR:   begin assign Result = A | B;    assign Result2 = 0; end
+                `ALU_XOR:  begin assign Result = A ^ B;    assign Result2 = 0; end
+                `ALU_NOR:  begin assign Result = ~(A | B); assign Result2 = 0; end
+                `ALU_SLT:  begin
+                                 assign Result = ($signed(A) < $signed(B)) ? 1 : 0;
+                                 assign Result2 = 0;
+                           end
+                `ALU_SLTU: begin
+                                 assign Result = ($unsigned(A) < $unsigned(B)) ? 1 : 0;
+                                 assign Result2 = 0;
+                           end
+                default:   begin assign Result = 0; assign Result2 = 0; end
             endcase
         end
 
