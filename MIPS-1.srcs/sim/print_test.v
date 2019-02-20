@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 /*
- * 打印模
+ * 打印
  *
  * input:
  *      data:
@@ -46,7 +46,7 @@ module print_test;
         begin
             #15 clk_t<=~clk_t;
         end 
-    print print_test(
+    Print print_test(
         .data(data_t),
         .prints(prints_t),
         .print_mode(print_mode_t),

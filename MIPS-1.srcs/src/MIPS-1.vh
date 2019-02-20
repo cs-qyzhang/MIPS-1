@@ -92,3 +92,6 @@
 `define         MULTU_FUNC  6'd25
 `define         DIVU_FUNC   6'd27
 `define         MFLO_FUNC   6'd18
+
+// Adder width
+`define         ADDR_WIDTH  10

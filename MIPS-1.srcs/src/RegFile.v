@@ -37,7 +37,7 @@ module RegFile(clk,ra,rb,rw,we,din,R1,R2);
     always
         @(negedge clk)
         begin
-            if (we)
+            if (we && rw != 0)
                 GPR[rw] = din;
         end
 

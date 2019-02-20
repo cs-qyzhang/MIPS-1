@@ -23,14 +23,14 @@ module Pc(npc,rst,clk,pc_valid,pc);
         end
 
     always
-        @(posedge clk)
+        @(posedge clk or posedge rst)
         begin
-            if (pc_valid)
+            if (rst)
+                pc <= 0;
+            else if (pc_valid)
                 pc <= npc;
+            else
+                ;
         end
-
-    always
-        @(posedge rst)
-        pc <= 0;
 
 endmodule

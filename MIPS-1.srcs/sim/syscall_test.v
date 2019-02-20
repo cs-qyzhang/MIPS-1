@@ -15,38 +15,38 @@ module syscall_test();
             go = 0;
             a0 = 10;
             v0 = `SYS_PDEC;
-            #5
+            #50
             syscall = 1;
-            #5
+            #50
             syscall = 0;
-            #10
+            #100
             v0 = `SYS_PDEC;
             syscall = 1;
-            #5
+            #50
             syscall = 0;
-            #20
+            #200
             v0 = `SYS_PAUSE;
-            #5
+            #50
             syscall = 1;
-            #10
+            #100
             go = 1;
-            #10
+            #100
             go = 0;
-            #5
+            #50
             syscall = 0;
-            #10
+            #100
             v0 = `SYS_EXIT;
-            #20
+            #200
             syscall = 1;
-            #10
+            #100
             go = 1;
 
         end
 
     always
-        #5 clk = ~clk;
+        #50 clk = ~clk;
 
-    syscall syscalls(
+    Syscall syscalls(
         .clk(clk),
         .rst(rst),
         .syscall(syscall),

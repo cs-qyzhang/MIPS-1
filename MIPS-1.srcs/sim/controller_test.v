@@ -22,7 +22,7 @@ module controller_test();
   wire [1 : 0] mode;
   wire [1 : 0] b_branch;
 
-  controller controller_tb(
+  Controller controller_tb(
     .op_code(op_code),
     .func(func),
     .alu_op(alu_op),

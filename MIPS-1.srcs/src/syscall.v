@@ -37,29 +37,21 @@ module Syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode);
         end
 
     always
-        @(posedge rst)
-        begin
-            led_data   <= 0;
-            pause      <= 0;
-            print      <= 0;
-            print_mode <= `PRINT_DEC;
-            can_go      = 0;
-        end
-
-    always
-        @(posedge go)
-        begin
-            if (can_go)
-                pause <= 0;
-        end
-
-
-    always
-        @(posedge clk)
+        @(posedge clk or posedge rst or posedge go)
         begin
             print <= 0;
 
-            if (!pause & syscall)
+            if (go && can_go && pause)
+                pause <= 0;
+            else if (rst)
+                begin
+                    led_data   <= 0;
+                    pause      <= 0;
+                    print      <= 0;
+                    print_mode <= `PRINT_DEC;
+                    can_go      = 0;
+                end
+            else if (!pause && syscall)
                 begin
                     case (v0)
                         `SYS_PAUSE:
@@ -92,6 +84,8 @@ module Syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode);
                             end
                     endcase
                 end
+            else
+                ;
         end
 
 endmodule
