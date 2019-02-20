@@ -14,7 +14,7 @@
  *
  * TODO: 使用verilog udp真值表描述？
  */
-module controller(
+module Controller(
   op_code, func,
   alu_op,
   MemToReg, MemWrite,

@@ -28,6 +28,17 @@ module main(clk);
 
     wire[31:0]  npc, npc_rs;
 
+    wire        MemToReg, MemWrite;
+    wire        alu_src, shamt_src;
+    wire        RegWrite, RegDst;
+    wire        syscall;
+    wire        SignedExt, mem_signed_ext;
+    wire        beq, bne;
+    wire        jr, jmp, jal;
+    wire        lui, mflo;
+    wire        hlen;
+    wire[1:0]   b_branch;
+
     wire[4:0]   rsn;
     wire[1:0]   B;
 
@@ -57,7 +68,7 @@ module main(clk);
 `ifdef  DEBUG
     assign cp = clk;
 `else
-    divider #(1000) divider(clk, cp);
+    divider #(10000) divider(clk, cp);
 `endif
 
     Pc pc(
@@ -81,10 +92,46 @@ module main(clk);
         .npc(npc)
     );
 
-    ROM rom(
+    Controller controller(
+        .op_code(op),
+        .func(func),
+        .alu_op(aluop),
+        .MemToReg(MemToReg),
+        .MemWrite(MemWrite),
+        .alu_src(alu_src), 
+        .shamt_src(shmat_src),
+        .RegWrite(RegWrite),
+        .RegDst(RegDst),
+        .syscall(syscall),
+        .SignedExt(SignedExt),
+        .mem_signed_ext(mem_signed_ext),
+        .beq(beq),
+        .bne(bne),
+        .jr(jr),
+        .jmp(jmp),
+        .jal(jal),
+        .lui(lui),
+        .mflo(mflo),
+        .hlen(hlen),
+        .mode(ram_mode),
+        .b_branch(b_branch)
+    );
+
+    ROM #(.ADDR_LEN(`ADDR_WIDTH),.DATA_LEN(32)) rom(
         .addr(ins_addr),
         .sel(rom_sel),
         .data(ins)
+    );
+
+    RegFile regfile(
+        .clk(cp),
+        .ra(ra),
+        .rb(rb),
+        .rw(rw),
+        .we(regfile_we),
+        .din(regfile_din),
+        .R1(R1),
+        .R2(R2)
     );
 
     ALU alu(
@@ -95,6 +142,17 @@ module main(clk);
         .Equal(equal),
         .Result(result),
         .Result2(result2)
+    );
+
+    RAM #(.ADDR_LEN(`ADDR_WIDTH),.DATA_LEN(32)) ram(
+        .clk(clk),
+        .rst(rst),
+        .addr(ram_addr),
+        .sel(ram_sel),
+        .read_en(ram_re),
+        .write_en(ram_we),
+        .data_in(ram_din),
+        .data_out(ram_dout)
     );
 
     Branch branch(
@@ -115,26 +173,18 @@ module main(clk);
         .a0(a0),
         .v0(v0),
         .pause(pause),
-        .print(print),
+        .print(prints),
         .led_data(led_data),
         .print_mode(print_mode)
     );
 
-    Register register(
-        .data_in(data_in),
-        .data_out(data_out),
-
-    );
-
-    RegFile regfile(
-        .clk(cp),
-        .ra(ra),
-        .rb(rb),
-        .rw(rw),
-        .we(regfile_we),
-        .din(regfile_din),
-        .R1(R1),
-        .R2(R2)
+    Print #(.SHOW_WIDTH(32)) print(
+        .data(led_data),
+        .prints(prints),
+        .print_mode(print_mode),
+        .clk(clk),
+        .an(an),
+        .seg(seg)
     );
 
     assign  op    = ins[31:26];
@@ -146,5 +196,6 @@ module main(clk);
     assign  imm   = ins[15:0];
     assign  imm26 = ins[25:0];
 
-    assign  ins_addr = pc;
+    assign  ins_addr = pc[ADDR_WIDTH-1:0];
+
 endmodule

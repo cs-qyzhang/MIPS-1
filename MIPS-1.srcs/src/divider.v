@@ -7,7 +7,7 @@
  *output:
  *      clk_n
  */
-module divider(clk, clk_n);
+module Divider(clk, clk_n);
     input clk;                          
     output clk_n;                       
     

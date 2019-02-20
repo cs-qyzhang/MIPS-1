@@ -5,6 +5,6 @@
  * led 显示模块
  *
  */
-module led();
+module Led();
 
 endmodule

@@ -31,13 +31,11 @@ module Npc(pc,clk,rst,imm,imm26,branch,rs,jr,jmp,npc);
         npc <= 0;
 
     always
-        @(posedge rst)
-        npc <= 0;
-
-    always
-        @(posedge clk)
+        @(posedge clk or posedge rst)
         begin
-            if (branch)
+            if (rst)
+                npc <= 0;
+            else if (branch)
                 npc <= {14'b00, imm, 2'b00} + pc + 4;
             else if (jr)
                 npc <= rs;
