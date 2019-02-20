@@ -1357,15 +1357,15 @@ c 22100007 102020 20020022 c 22100008 102020 20020022
       <circ-port height="10" pin="730,360" width="10" x="175" y="45"/>
       <circ-port height="10" pin="920,400" width="10" x="175" y="195"/>
       <circ-port height="10" pin="780,370" width="10" x="175" y="75"/>
-      <circ-port height="10" pin="310,500" width="10" x="175" y="145"/>
-      <circ-port height="10" pin="360,510" width="10" x="175" y="165"/>
-      <circ-port height="10" pin="400,520" width="10" x="175" y="185"/>
-      <circ-port height="10" pin="450,530" width="10" x="175" y="55"/>
-      <circ-port height="10" pin="500,540" width="10" x="175" y="205"/>
-      <circ-port height="10" pin="550,550" width="10" x="175" y="225"/>
-      <circ-port height="10" pin="640,560" width="10" x="175" y="235"/>
-      <circ-port height="10" pin="750,570" width="10" x="175" y="245"/>
-      <circ-port height="10" pin="920,580" width="10" x="175" y="255"/>
+      <circ-port height="10" pin="310,500" width="10" x="135" y="95"/>
+      <circ-port height="10" pin="360,510" width="10" x="135" y="105"/>
+      <circ-port height="10" pin="400,520" width="10" x="135" y="115"/>
+      <circ-port height="10" pin="450,530" width="10" x="135" y="125"/>
+      <circ-port height="10" pin="500,540" width="10" x="135" y="135"/>
+      <circ-port height="10" pin="550,550" width="10" x="135" y="145"/>
+      <circ-port height="10" pin="640,560" width="10" x="135" y="155"/>
+      <circ-port height="10" pin="750,570" width="10" x="135" y="165"/>
+      <circ-port height="10" pin="920,580" width="10" x="135" y="175"/>
       <circ-anchor facing="east" height="6" width="6" x="177" y="117"/>
     </appear>
     <wire from="(130,320)" to="(130,520)"/>
