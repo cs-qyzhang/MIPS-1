@@ -55,9 +55,9 @@ module main(clk);
     wire[3:0]   print_mode;
 
 `ifdef  DEBUG
-    
+    assign cp = clk;
 `else
-
+    divider #(1000) divider(clk, cp);
 `endif
 
     Pc pc(

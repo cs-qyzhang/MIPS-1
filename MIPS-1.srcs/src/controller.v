@@ -131,7 +131,7 @@ module controller(
                   (Or | ori) ? `ALU_OR:
                   (Xor | Xori) ? `ALU_XOR:
                   (Nor) ? `ALU_NOR:
-                  (slt | sltiu | blez | bgtz | bltz | bgez) ? `ALU_SLT:
+                  (slt | slti | sltiu | blez | bgtz | bltz | bgez) ? `ALU_SLT:
                   (sltu) ? `ALU_SLTU: 4'd15; //剩下的指令alu_op全1
 
   assign MemToReg = (lw | lb | lbu | lh | lhu);

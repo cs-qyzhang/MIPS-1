@@ -27,9 +27,6 @@ module Syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode);
 
     reg can_go;
 
-    // 实例化print，注意print和syscall触发沿应错开
-    //print prints();
-
     initial
         begin
             led_data   <= 0;
@@ -84,7 +81,7 @@ module Syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode);
                         `SYS_PBIN:
                             begin
                                 led_data   <= a0;
-                                print      <= 1;
+                                print      <= 1; 
                                 print_mode <= `PRINT_BIN;
                             end
                         `SYS_PHEX:

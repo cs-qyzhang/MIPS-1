@@ -2,4 +2,9 @@ MIPS-1.cache/
 MIPS-1.hw/
 MIPS-1.sim/
 MIPS-1.runs/
+MIPS-1.xpr
+.Xil/
 .~*
+*.wcfg
+*.jou
+*.log
