@@ -16,7 +16,7 @@ module main_test();
     initial
         begin
             rst = 0;
-            clk = 0;
+            clk = 1;
         end
         
     always

@@ -19,7 +19,7 @@ module Pc(npc,rst,clk,pc_valid,pc);
 
     initial
         begin
-            pc <= 0;
+            pc = 0;
         end
 
     always

@@ -68,6 +68,7 @@ module Main(clk, an, seg,rst);
 
 `ifdef  DEBUG
     assign cp = clk;
+    assign go = 1;
 `else
     divider #(10000) divider(clk, cp);
 `endif
@@ -140,7 +141,7 @@ module Main(clk, an, seg,rst);
 
     assign rom_sel = 1;
     ROM #(.ADDR_LEN(`ADDR_WIDTH-2),.DATA_LEN(32)) rom(
-        .addr(ins_addr[`ADDR_WIDTH:2]),
+        .addr(ins_addr[`ADDR_WIDTH-1:2]),
         .sel(rom_sel),
         .data(ins)
     );
@@ -162,8 +163,8 @@ module Main(clk, an, seg,rst);
         .Shmat(alu_shmat),
         .AluOp(aluop),
         .Equal(equal),
-        .Result(result),
-        .Result2(result2)
+        .result(result),
+        .result2(result2)
     );
 
     //RAM #(.ADDR_LEN(`ADDR_WIDTH),.DATA_LEN(32)) ram(

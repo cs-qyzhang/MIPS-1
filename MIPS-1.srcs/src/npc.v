@@ -28,10 +28,12 @@ module Npc(pc,clk,rst,imm,imm26,branch,rs,jr,jmp,npc);
     output reg[31:0]npc;
 
     initial
-        npc <= 0;
+        begin
+            npc <= 0;
+        end
 
     always
-        @(posedge clk or posedge rst)
+        @(negedge clk or posedge rst)
         begin
             if (rst)
                 npc <= 0;
