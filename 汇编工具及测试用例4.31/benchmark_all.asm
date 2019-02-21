@@ -810,8 +810,8 @@ bgez $s1,bgez_branch   #测试指令
 #addi    $v0,$zero,10         #停机指令
 syscall                  # 系统调用
                  
- #addi    $v0,$zero,10         # system call for exit
- syscall                  # we are out of here.   
+#addi    $v0,$zero,10         # system call for exit
+syscall                  # we are out of here.   
  
  #MIPS处理器实现中请用停机指令实现syscall
 
