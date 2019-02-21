@@ -163,7 +163,10 @@ module Controller(
                       lw | sw |
                       sltiu |
                       lb | lbu | lh | lhu |
-                      sb | sh;
+                      sb | sh |
+                      beq | bne |
+                      blez | bgtz |
+                      bltz | bgez;
   assign RegDst = sll | sra | srl |
                   add | addu |
                   sub |
