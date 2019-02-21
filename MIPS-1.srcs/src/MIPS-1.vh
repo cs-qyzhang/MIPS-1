@@ -4,8 +4,6 @@
  */
 `timescale  1 ns / 1 ps
 
-`define         DEBUG
-
 `define         TRUE        1
 `define         FALSE       0
 
@@ -94,4 +92,4 @@
 `define         MFLO_FUNC   6'd18
 
 // Adder width
-`define         ADDR_WIDTH  10
+`define         ADDR_WIDTH  20

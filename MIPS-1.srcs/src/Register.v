@@ -17,7 +17,7 @@ module Register(data_in,data_out,clk,rst,inr);
     output reg [DATA_WIDTH-1:0]data_out;
 
     //上升沿触发
-    always @ (posedge clk or posedge rst)
+    always @ (posedge clk)
     begin 
     //当rst为1时，清零
         if(rst == 1) data_out <= 0;

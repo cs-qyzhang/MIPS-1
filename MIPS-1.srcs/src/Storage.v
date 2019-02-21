@@ -37,7 +37,7 @@ module Storage(addr, din, mode, we, clk, rst, dout);
         .rst(rst),
         .addr({addr[`ADDR_WIDTH-1:2], 2'b00}),
         .sel(sel),
-        .read_en(1),
+        .read_en(1'b1),
         .write_en(we),
         .data_in(ram_in),
         .data_out(ram_out)

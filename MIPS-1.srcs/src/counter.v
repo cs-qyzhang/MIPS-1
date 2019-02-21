@@ -24,7 +24,7 @@ module Counter(clk,rst,count,ld,data,cnt);
             cnt <= 0;
 
     always
-        @(posedge clk or posedge rst)
+        @(posedge clk)
         begin
             if (rst)
                 cnt <= 0;

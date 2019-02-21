@@ -15,8 +15,8 @@ module ALU_test();
         .B(B),
         .AluOp(AluOp),
         .Shmat(Shmat),
-        .Result(Result),
-        .Result2(Result2)
+        .result(Result),
+        .result2(Result2)
     );
 
     initial

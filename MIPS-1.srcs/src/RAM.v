@@ -16,7 +16,7 @@
 module RAM(clk,rst,addr,sel,read_en,write_en,data_in,data_out);
     parameter ADDR_LEN=8;
     parameter DATA_LEN=8;
-    parameter DATA_NUM=2**ADDR_LEN;
+    parameter DATA_NUM=2048;
     
     input clk,rst,read_en,write_en;
     input [3:0]sel;

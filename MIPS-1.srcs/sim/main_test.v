@@ -9,17 +9,16 @@ module main_test();
     Main main(
         .clk(clk),
         .an(an),
-        .seg(seg),
-        .rst(rst)
+        .seg(seg)
     );
 
     initial
         begin
             rst = 0;
-            clk = 0;
+            clk = 1;
         end
         
     always
-        #100 clk = ~clk;
+        #10 clk = ~clk;
     
 endmodule

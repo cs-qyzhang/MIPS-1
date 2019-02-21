@@ -19,11 +19,11 @@ module Pc(npc,rst,clk,pc_valid,pc);
 
     initial
         begin
-            pc <= 0;
+            pc = 0;
         end
 
     always
-        @(posedge clk or posedge rst)
+        @(posedge clk)
         begin
             if (rst)
                 pc <= 0;

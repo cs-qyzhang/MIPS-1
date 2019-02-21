@@ -13,7 +13,7 @@ module ROM(addr,sel,data);
 
     parameter ADDR_LEN=32;
     parameter DATA_LEN=32;
-    parameter DATA_NUM=256;
+    parameter DATA_NUM=2048;
     
     input [ADDR_LEN-1:0]addr;
     input sel;
