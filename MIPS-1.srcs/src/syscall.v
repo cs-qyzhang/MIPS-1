@@ -18,9 +18,9 @@
  *      print: 打印信号
  *      print_mode: 打印模式
  */
-module Syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode);
-    input           clk, rst, syscall, go;
-    input[31:0]     a0, v0;
+module Syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode,pause_and_show, show_data);
+    input           clk, rst, syscall, go, pause_and_show;
+    input[31:0]     a0, v0, show_data;
     output reg[31:0]led_data;
     output reg      pause, print;
     output reg[3:0] print_mode;
@@ -41,7 +41,15 @@ module Syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode);
         begin
             print <= 0;
 
-            if (go && can_go && pause)
+            if (pause_and_show)
+                begin
+                    led_data <= show_data;
+                    print <= 1;
+                    print_mode <= `PRINT_HEX;
+                    pause <= 1;
+                    can_go <= 1;
+                end
+            else if (go && can_go && pause)
                 pause <= 0;
             else if (rst)
                 begin
