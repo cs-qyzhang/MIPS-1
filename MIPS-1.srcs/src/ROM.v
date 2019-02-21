@@ -23,7 +23,7 @@ module ROM(addr,sel,data);
     
     initial 
         begin
-            $readmemh("/home/qyzhang/ROM.txt",my_rom); 
+            $readmemh("/media/psf/Home/Desktop/ROM.txt",my_rom); 
         end
         assign data=sel?my_rom[addr]:'bz;
 endmodule
