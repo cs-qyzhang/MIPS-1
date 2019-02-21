@@ -71,7 +71,7 @@ module Main(clk, btnl, btnr, an, seg);
     assign go = 1;
     assign rst = 0;
 `else
-    Divider #(10000) divider(
+    Divider #(100_0000) divider(
         .clk(clk),
         .clk_n(cp)
     );
@@ -99,7 +99,7 @@ module Main(clk, btnl, btnr, an, seg);
         .pc(pc),
         .clk(cp),
         .rst(rst),
-        .imm(imm),
+        .imm_ext(imm_ext),
         .imm26(imm26),
         .branch(branch),
         .rs(npc_rs),
@@ -136,13 +136,13 @@ module Main(clk, btnl, btnr, an, seg);
     Extender zero_extender(
         .Din(imm),
         .Dout(imm_zero_ext),
-        .sel(1'b0)
+        .sel(1'b1)
     );
 
     Extender sign_extender(
         .Din(imm),
         .Dout(imm_sign_ext),
-        .sel(1'b1)
+        .sel(1'b0)
     );
 
     assign rom_sel = 1;
@@ -246,7 +246,7 @@ module Main(clk, btnl, btnr, an, seg);
 
     assign A    = R1;
     assign B    = alu_src ? imm_ext : R2;
-    assign alu_shmat = shmat_src ? shmat : R1;
+    assign alu_shmat = shmat_src ? R1 : shmat;
     
     assign a0 = R1;
     assign v0 = R2;
