@@ -30,3 +30,27 @@ module Divider(clk, clk_n);
                 end
         end
 endmodule
+
+module DividerFreq(clk,freq,clk_n);
+    input       clk;
+    input[31:0] freq;
+    output reg  clk_n;
+
+    reg [31:0]  cnt;
+
+    initial
+        begin
+            cnt = 0;
+        end
+
+    always
+        @(posedge clk) begin
+            cnt = cnt + 1;
+            if (cnt >= (100_000_000 / freq))
+                begin
+                    cnt = 0;
+                    clk_n = ~clk_n;
+                end
+        end
+
+endmodule

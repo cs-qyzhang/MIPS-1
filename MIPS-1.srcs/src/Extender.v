@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 /*
-Î»Êý¿É±äµÄÍØÕ¹
+Î»ï¿½ï¿½ï¿½É±ï¿½ï¿½ï¿½ï¿½Õ¹
 input:
     Din
     sel
@@ -16,6 +16,6 @@ module Extender(Din,Dout,sel);
     input [DATA_IN_WIDTH-1:0]Din;
     output [DATA_OUT_WIDTH-1:0]Dout;
 
-    assign Dout = sel ? {{(DATA_OUT_WIDTH-DATA_IN_WIDTH)*1'b0},Din[DATA_IN_WIDTH-1:0]} : {{(DATA_OUT_WIDTH-DATA_IN_WIDTH){Din[DATA_IN_WIDTH-1]}},Din[DATA_IN_WIDTH-1:0]};
+    assign Dout = ~sel ? {{(DATA_OUT_WIDTH-DATA_IN_WIDTH)*1'b0},Din[DATA_IN_WIDTH-1:0]} : {{(DATA_OUT_WIDTH-DATA_IN_WIDTH){Din[DATA_IN_WIDTH-1]}},Din[DATA_IN_WIDTH-1:0]};
 
 endmodule

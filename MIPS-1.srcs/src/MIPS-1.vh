@@ -93,3 +93,16 @@
 
 // Adder width
 `define         ADDR_WIDTH  20
+
+// FREQ in HZ
+`define         FREQ_ULTRA_FAST 4000
+`define         FREQ_FAST       1000
+`define         FREQ_MID        100
+`define         FREQ_SLOW       32
+`define         FREQ_ULTRA_SLOW 1
+`define         FREQ_DEF        `FREQ_MID
+
+// SHOW TYPE
+`define         SHOW_ALL_CYC    4'b0000
+`define         SHOW_BRANCH_NUM 4'b0001
+`define         SHOW_JMP_NUM    4'b0010

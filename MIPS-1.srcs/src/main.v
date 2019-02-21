@@ -4,19 +4,14 @@
 /*
  * 顶层模块
  *
- * input:
- *      clk:
- *      sw:
- *      seg:
- *      an:
- *
- * output:
- *      led:
- *
  */
-module Main(clk, btnl, btnr, an, seg);
-    input       clk, btnl, btnr;
+module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
+            an,seg,led,led16_b,led16_g,led16_r,led17_b,led17_g,led17_r);
+    input       clk, btnl, btnr, btnc, btnu, btnd;
+    input[15:0]  sw;
     output[7:0]  an, seg;
+    output[15:0] led;
+    output       led16_b, led16_g, led16_r, led17_b, led17_g, led17_r;
 
     wire[31:0]  pc, lo_out;
     wire        rst;
@@ -27,7 +22,7 @@ module Main(clk, btnl, btnr, an, seg);
     wire[4:0]   shmat;
     wire[15:0]  imm;
     wire[25:0]  imm26;
-    wire[31:0]  imm_sign_ext, imm_zero_ext, imm_ext;
+    wire[31:0]  imm_ext;
 
     wire[31:0]  npc, npc_rs;
 
@@ -42,7 +37,7 @@ module Main(clk, btnl, btnr, an, seg);
     wire        hlen;
 
     wire[1:0]   b_branch;
-    wire            branch;
+    wire        branch;
 
     wire[31:0]  R1, R2, regfile_din;
     wire[4:0]   ra, rb, rw;
@@ -62,18 +57,27 @@ module Main(clk, btnl, btnr, an, seg);
     wire        rom_sel;
 
     wire[31:0]  a0, v0;
-    wire        pause, go, prints;
-    wire[31:0]  led_data;
+    wire        pause, go, prints, pause_and_show;
+    wire[31:0]  led_data, show_data;
     wire[3:0]   print_mode;
+    wire[3:0]   show_type;
+
+    wire[31:0]  jmp_num, branch_num, all_cyc;
+    wire[31:0]  freq;
 
 `ifdef  DEBUG
     assign cp = clk;
-    assign go = 1;
-    assign rst = 0;
+    assign btnr = 1;
+    assign btnl = 0;
+    assign btnc = 0;
+    assign btnu = 0;
+    assign btnd = 0;
+    assign sw = 0;
 `else
-    Divider #(100_0000) divider(
+    DividerFreq freq_divider(
         .clk(clk),
-        .clk_n(cp)
+        .clk_n(cp),
+        .freq(freq)
     );
     assign go = btnr;
     assign rst = btnl;
@@ -133,16 +137,10 @@ module Main(clk, btnl, btnr, an, seg);
         .b_branch(b_branch)
     );
 
-    Extender zero_extender(
+    Extender extender(
         .Din(imm),
-        .Dout(imm_zero_ext),
-        .sel(1'b1)
-    );
-
-    Extender sign_extender(
-        .Din(imm),
-        .Dout(imm_sign_ext),
-        .sel(1'b0)
+        .Dout(imm_ext),
+        .sel(SignedExt)
     );
 
     assign rom_sel = 1;
@@ -172,17 +170,6 @@ module Main(clk, btnl, btnr, an, seg);
         .result(result),
         .result2(result2)
     );
-
-    //RAM #(.ADDR_LEN(`ADDR_WIDTH),.DATA_LEN(32)) ram(
-        //.clk(clk),
-        //.rst(rst),
-        //.addr(ram_addr),
-        //.sel(ram_sel),
-        //.read_en(ram_re),
-        //.write_en(ram_we),
-        //.data_in(ram_din),
-        //.data_out(ram_dout)
-    //);
 
     Storage storage(
         .addr(ram_addr),
@@ -215,7 +202,9 @@ module Main(clk, btnl, btnr, an, seg);
         .pause(pause),
         .print(prints),
         .led_data(led_data),
-        .print_mode(print_mode)
+        .print_mode(print_mode),
+        .pause_and_show(pause_and_show),
+        .show_data(show_data)
     );
 
     Print #(.SHOW_WIDTH(32)) printf(
@@ -227,6 +216,58 @@ module Main(clk, btnl, btnr, an, seg);
         .seg(seg)
     );
 
+    Led leds(
+        .pause(pause),
+        .led(led),
+        .led16_b(led16_b),
+        .led16_g(led16_g),
+        .led16_r(led16_r),
+        .led17_b(led17_b),
+        .led17_g(led17_g),
+        .led17_r(led17_r)
+    );
+
+    Input inputs(
+        .btnl(btnl),
+        .btnr(btnr),
+        .btnc(btnc),
+        .btnu(btnu),
+        .btnd(btnd),
+        .sw(sw),
+        .go(go),
+        .rst(rst),
+        .freq(freq),
+        .pause_and_show(pause_and_show),
+        .show_type(show_type)
+    );
+
+    Counter all_cyc_counter(
+        .clk(cp),
+        .rst(rst),
+        .count(~pause & clk),
+        .ld(1'b0),
+        .data('b0),
+        .cnt(all_cyc)
+    );
+
+    Counter branch_num_counter(
+        .clk(cp),
+        .rst(rst),
+        .count(branch),
+        .ld(1'b0),
+        .data('b0),
+        .cnt(branch_num)
+    );
+
+    Counter jmp_num_counter(
+        .clk(cp),
+        .rst(rst),
+        .count(jmp | jr),
+        .ld(1'b0),
+        .data('b0),
+        .cnt(jmp_num)
+    );
+
     assign op    = ins[31:26];
     assign rs    = ins[25:21];
     assign rt    = ins[20:16];
@@ -235,8 +276,6 @@ module Main(clk, btnl, btnr, an, seg);
     assign func  = ins[5:0];
     assign imm   = ins[15:0];
     assign imm26 = ins[25:0];
-
-    assign imm_ext = SignedExt ? imm_sign_ext : imm_zero_ext;
 
     assign ins_addr = pc[`ADDR_WIDTH-1:0];
 
@@ -256,8 +295,12 @@ module Main(clk, btnl, btnr, an, seg);
     assign ram_addr = result[`ADDR_WIDTH-1:0];
 
     assign regfile_din = mflo ? lo_out : 
-                         (lui ? (imm_zero_ext << 'h10) :
+                         (lui ? (imm << 'h10) :
                          (jal ? (pc + 4) :
                          (MemToReg ? ram_dout : result)));
+
+    assign show_data = (show_type == `SHOW_ALL_CYC) ? all_cyc :
+                                       ( (show_type == `SHOW_BRANCH_NUM) ? branch_num : 
+                                       ( (show_type == `SHOW_JMP_NUM) ? jmp_num : all_cyc) );
 
 endmodule
