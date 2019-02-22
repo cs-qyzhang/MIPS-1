@@ -50,7 +50,7 @@ module ALU(A,B,Shmat,AluOp,Equal,result,result2);
     assign result2 = mul_or_div ? mdu_hi : Result2;
 
     always
-        @(AluOp, A, B)
+        @(AluOp, A, B, Shmat)
         begin
             mul_or_div = 0;
             case (AluOp)
@@ -107,6 +107,12 @@ module MDU(op,A,B,LO,HI);
     output reg[31:0]LO,HI;
 
     reg[63:0]       mul_result;
+
+    initial
+        begin
+            LO <= 0;
+            HI <= 0;
+        end
 
     always
         @(op, A, B)
