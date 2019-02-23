@@ -26,6 +26,8 @@
         r1_in
         pc_in
         ir_in
+
+        wback_in
           
    output:
         clk
@@ -51,7 +53,9 @@
            r2_out
            r1_out
            pc_out
-           ir_out           
+           ir_out
+
+           wback_out           
 */
 module ID_EX(
     clk,rst,stall, //always
