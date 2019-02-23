@@ -16,27 +16,19 @@
  */
 module Print(data,prints,print_mode,clk,an,seg);
     parameter SHOW_WIDTH=32;
-    parameter LED0=0,LED1=1,LED2=2,LED3=3,LED4=4,LED5=5,LED6=6,LED7=7;
+    parameter LED0=3'd0,LED1=3'd1,LED2=3'd2,LED3=3'd3,LED4=3'd4,LED5=3'd5,LED6=3'd6,LED7=3'd7;
     
     input [SHOW_WIDTH-1:0]data;
     input prints,clk;
     input[3:0] print_mode;
-    output reg [7:0]an;
+    output reg [7:0]an = 0;
     output  [7:0]seg;
     
     wire clk_n;
-    reg [SHOW_WIDTH-1:0]show_data;
-    reg [3:0]show_number;
-    integer i;
+    reg [SHOW_WIDTH-1:0]show_data = 0;
+    reg [3:0]show_number = 0;
+    reg [31:0] i = 0;
      
-    initial
-        begin
-            i<=0;
-            an<=0;
-            show_data<=0;
-            show_number<=0;
-        end
-        
     always @(negedge clk_n)
         begin
             if(prints) 
@@ -103,7 +95,6 @@ module Print(data,prints,print_mode,clk,an,seg);
                         an=8'b0;
                     end
             endcase
-            
         end
         
         Pattern
@@ -111,9 +102,6 @@ module Print(data,prints,print_mode,clk,an,seg);
         Divider #(50000)
             divider0(clk,clk_n);
 endmodule
-
-
-
 
 module Pattern(code, patt);
     input [3: 0] code;            
@@ -142,6 +130,3 @@ module Pattern(code, patt);
     end
 
 endmodule
-
-
-

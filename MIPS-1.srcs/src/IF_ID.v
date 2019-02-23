@@ -21,17 +21,11 @@ module IF_ID(
     parameter ADDR_LEN=32;
 
     input clk,rst,stall;
-    input [DATA_LEN:0]pc_in;
-    input [ADDR_LEN:0]ir_in;
+    input [DATA_LEN-1:0]pc_in;
+    input [ADDR_LEN-1:0]ir_in;
     
-    output reg [DATA_LEN:0]pc_out;
-    output reg [ADDR_LEN:0]ir_out;
-    
-    initial
-        begin
-            pc_out<=0;
-            ir_out<=0;
-        end
+    output reg [DATA_LEN-1:0]pc_out = 0;
+    output reg [ADDR_LEN-1:0]ir_out = 0;
      
     always@(posedge clk)
         begin

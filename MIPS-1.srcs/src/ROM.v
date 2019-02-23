@@ -18,8 +18,8 @@ module ROM(addr,sel,data);
     input [ADDR_LEN-1:0]addr;
     input sel;
     output  [DATA_LEN-1:0]data;
-    //integer i;
-    reg[DATA_LEN-1:0]my_rom[DATA_NUM-1:0];
+    
+    (* rom_style = "block" *)reg[DATA_LEN-1:0]my_rom[DATA_NUM-1:0];
     
     initial 
         begin
@@ -29,5 +29,7 @@ module ROM(addr,sel,data);
             $readmemh("/media/psf/Home/Desktop/ROM.txt",my_rom); 
 `endif
         end
+
         assign data=sel?my_rom[addr]:'bz;
+
 endmodule

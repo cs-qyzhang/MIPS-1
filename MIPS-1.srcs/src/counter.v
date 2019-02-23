@@ -18,10 +18,7 @@
 module Counter(clk,rst,count,ld,data,cnt);
     input           clk, rst, count, ld;
     input[31:0] data;
-    output reg[31:0]cnt;
-
-    initial
-        cnt <= 0;
+    output reg[31:0]cnt = 0;
 
     always
         @(negedge clk)

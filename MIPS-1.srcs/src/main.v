@@ -90,7 +90,7 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
         .data_out(lo_out),
         .clk(clk),
         .rst(rst),
-        .inr(mflo)
+        .en(mflo)
     );
 
     Npc npcs(
@@ -161,8 +161,8 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
         .Shmat(alu_shmat),
         .AluOp(aluop),
         .Equal(equal),
-        .result(result),
-        .result2(result2)
+        .Result(result),
+        .Result2(result2)
     );
 
     MipsRAM ram(

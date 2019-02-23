@@ -63,6 +63,7 @@ module ID_EX(
     MemWrite_out, MODE_out, Shamt_out, Hlen_out, AluSrcB_out, AluOP_out, ImmExt_out,//out
     ImmExtSft_out, r2_out, r1_out, pc_out, ir_out,Wback_out //out 
     );
+
     parameter DATA_LEN=32;
     
     input clk,rst,stall;
@@ -73,21 +74,27 @@ module ID_EX(
     input [4:0] Wback_in; 
     input [DATA_LEN-1:0]ImmExt_in,ImmExtSft_in,r2_in,r1_in,pc_in,ir_in;
     
-    
-    output reg RegWrite_out, Jal_out, Lui_out, MFLO_out, MemToReg_out, Syscall_out, MemSignExt_out,RegDst_out;
-    output reg MemWrite_out,Shamt_out, Hlen_out, AluSrcB_out;
-    output reg [1:0]MODE_out;
-    output reg [3:0]AluOP_out;
-    output reg [4:0]Wback_out;
-    output reg [DATA_LEN:0]ImmExt_out,ImmExtSft_out,r2_out,r1_out,pc_out,ir_out;
-    
-    initial
-        begin
-             {RegWrite_out, Jal_out, Lui_out, MFLO_out, MemToReg_out, Syscall_out, MemSignExt_out,RegDst_out,
-             MemWrite_out,Shamt_out, Hlen_out, AluSrcB_out,
-             MODE_out, AluOP_out, Wback_out,
-             ImmExtSft_out,r2_out,r1_out,pc_out,ir_out}<=0;
-        end
+    output reg RegWrite_out                = 0;
+    output reg Jal_out                     = 0;
+    output reg Lui_out                     = 0;
+    output reg MFLO_out                    = 0;
+    output reg MemToReg_out                = 0;
+    output reg Syscall_out                 = 0;
+    output reg MemSignExt_out              = 0;
+    output reg RegDst_out                  = 0;
+    output reg MemWrite_out                = 0;
+    output reg Shamt_out                   = 0;
+    output reg Hlen_out                    = 0;
+    output reg AluSrcB_out                 = 0;
+    output reg [1:0]MODE_out               = 0;
+    output reg [3:0]AluOP_out              = 0;
+    output reg [4:0]Wback_out              = 0;
+    output reg [DATA_LEN-1:0]ImmExt_out    = 0;
+    output reg [DATA_LEN-1:0]ImmExtSft_out = 0;
+    output reg [DATA_LEN-1:0]r2_out        = 0;
+    output reg [DATA_LEN-1:0]r1_out        = 0;
+    output reg [DATA_LEN-1:0]pc_out        = 0;
+    output reg [DATA_LEN-1:0]ir_out        = 0;
         
     always@(posedge clk)
         begin
@@ -102,7 +109,7 @@ module ID_EX(
                 begin
                 ;
                 end
-             else 
+            else 
                 begin
                     {RegWrite_out, Jal_out, Lui_out, MFLO_out, MemToReg_out, Syscall_out, MemSignExt_out,RegDst_out,
                     MemWrite_out,Shamt_out, Hlen_out, AluSrcB_out,

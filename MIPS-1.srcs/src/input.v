@@ -25,17 +25,12 @@ module Input(btnl,btnr,btnc,btnu,btnd,sw,
 
     output          pause_and_show,go,rst;
     output[3:0]     show_type;
-    output reg[31:0]freq;
+    output reg[31:0]freq = `FREQ_DEF;
 
     assign go = btnr;
     assign rst = btnl;
     assign pause_and_show = |sw[15:13];
     assign show_type = sw[15] ? `SHOW_ALL_CYC : (sw[14] ? `SHOW_BRANCH_NUM : (sw[13] ? `SHOW_JMP_NUM : `SHOW_ALL_CYC));
-
-    initial
-        begin
-            freq <= `FREQ_DEF;
-        end
 
     always
         @(sw[4:0])

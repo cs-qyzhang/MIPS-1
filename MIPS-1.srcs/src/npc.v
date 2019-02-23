@@ -25,12 +25,7 @@ module Npc(pc,clk,rst,imm_ext,imm26,branch,rs,jr,jmp,npc);
     input[25:0]     imm26;
     input[31:0]     imm_ext;
 
-    output reg[31:0]npc;
-
-    initial
-        begin
-            npc <= 0;
-        end
+    output reg[31:0]npc = 0;
 
     always
         @(negedge clk)

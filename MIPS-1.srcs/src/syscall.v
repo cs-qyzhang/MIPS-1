@@ -21,23 +21,13 @@
 module Syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode,pause_and_show, show_data);
     input           clk, rst, syscall, go, pause_and_show;
     input[31:0]     a0, v0, show_data;
-    output reg[31:0]led_data;
-    output reg      pause, print;
-    output reg[3:0] print_mode;
+    output reg[31:0]led_data = 0;
+    output reg      pause, print = 0;
+    output reg[3:0] print_mode = `PRINT_HEX;
 
-    reg can_go;
+    reg can_go = 0;
 
-    initial
-        begin
-            led_data   <= 0;
-            pause      <= 0;
-            print      <= 0;
-            print_mode <= `PRINT_DEC;
-            can_go      = 0;
-        end
-
-    always
-        @(negedge clk)
+    always @(negedge clk)
         begin
             print <= 0;
 

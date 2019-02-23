@@ -10,14 +10,11 @@ input
 output 
     data_out 输出
 */
-module Register(data_in,data_out,clk,rst,inr);
+module Register(data_in,data_out,clk,rst,en);
     parameter DATA_WIDTH = 32;
     input [DATA_WIDTH-1:0]data_in;
-    input clk,rst,inr;
-    output reg [DATA_WIDTH-1:0]data_out;
-
-    initial
-        data_out <= 0;
+    input clk,rst,en;
+    output reg [DATA_WIDTH-1:0]data_out = 0;
 
     //上升沿触发
     always @ (posedge clk)
@@ -25,7 +22,7 @@ module Register(data_in,data_out,clk,rst,inr);
     //当rst为1时，清零
         if(rst == 1) data_out <= 0;
     //当inr为0时，忽略时钟的输入
-        else if(inr == 0);
+        else if(en == 0);
     //当时钟端输入后，若不是上面两种情况则更新寄存器的值
         else data_out <= data_in; 
     end
