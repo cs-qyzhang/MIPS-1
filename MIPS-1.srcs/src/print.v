@@ -103,7 +103,6 @@ module Print(data,prints,print_mode,clk,an,seg);
                         an=8'b0;
                     end
             endcase
-        
             
         end
         

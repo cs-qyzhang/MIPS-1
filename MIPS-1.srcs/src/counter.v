@@ -21,10 +21,10 @@ module Counter(clk,rst,count,ld,data,cnt);
     output reg[31:0]cnt;
 
     initial
-            cnt <= 0;
+        cnt <= 0;
 
     always
-        @(posedge clk)
+        @(negedge clk)
         begin
             if (rst)
                 cnt <= 0;
@@ -33,7 +33,7 @@ module Counter(clk,rst,count,ld,data,cnt);
             else if (count)
                 cnt <= cnt + 'b1;
             else
-                ;
+                cnt <= cnt;
         end
 
 endmodule

@@ -326,7 +326,7 @@ syscall                  # print
 addi $t3,$t3, -1    
 bne $t3,$zero,sllv_branch
 
-#addi    $v0,$zero,10         # system call for exit
+#addi    $v0,$zero,50         # system call for exit
 syscall                  # we are out of here.   
 
 #SRLV移位测试    revise date:2018/3/14 tiger
@@ -352,7 +352,7 @@ syscall                  # print
 addi $t3,$t3, -1    
 bne $t3,$zero,srlv_branch   #循环8次
 
-#addi    $v0,$zero,10         # system call for exit
+#addi    $v0,$zero,50         # system call for exit
 syscall                  # we are out of here.   
 
 #SRAV移位测试    revise date:2018/3/12 tiger
@@ -378,7 +378,7 @@ syscall                  # print
 addi $t3,$t3, -1    
 bne $t3,$zero,srav_branch   #循环8次
 
-#addi    $v0,$zero,10         # system call for exit
+#addi    $v0,$zero,50         # system call for exit
 syscall                  # we are out of here.   
 
 #SUBU测试  循环减1   revise date:2018/3/12 tiger
@@ -402,7 +402,7 @@ syscall                  # print
 addi $t3,$t3, -1    
 bne $t3,$zero,subu_branch   #循环8次
 
-#addi    $v0,$zero,10         # system call for exit
+#addi    $v0,$zero,50         # system call for exit
 syscall                  # we are out of here.   
 
 #XOR测试    revise date:2018/3/12 tiger
@@ -427,7 +427,7 @@ syscall                  # print
 addi $t3,$t3, -1    
 bne $t3,$zero,xor_branch   #循环8次
 
-#addi    $v0,$zero,10         # system call for exit
+#addi    $v0,$zero,50         # system call for exit
 syscall                  # we are out of here.   
 #xori 测试    revise date:2018/3/12 tiger
 # 0x00007777 xor   0x0000ffff =  0x00008888
@@ -452,7 +452,7 @@ syscall                  # print
 addi $t3,$t3, -1    
 bne $t3,$zero,xori_branch   #循环8次
 
-#addi    $v0,$zero,10         # system call for exit
+#addi    $v0,$zero,50         # system call for exit
 syscall                  # we are out of here.   
 #LUI测试    revise date:2018/3/12 tiger
 #依次输出 0xfedcffff 0xba980000 0x76540000 0x32100000 0xfedcffff 0xba980000 0x76540000 0x32100000 0xfedcffff 0xba980000 0x76540000 0x32100000 0xfedcffff 0xba980000 0x76540000 0x32100000 0xfedcffff 0xba980000 0x76540000 0x32100000 0xfedcffff 0xba980000 0x76540000 0x32100000 0xfedcffff 0xba980000 0x76540000 0x32100000 0xfedcffff 0xba980000 0x76540000 0x32100000
@@ -478,7 +478,7 @@ syscall
 addi $t3,$t3, -1    
 bne $t3,$zero,lui_branch
 
-#addi    $v0,$zero,10         # system call for exit
+#addi    $v0,$zero,50         # system call for exit
 syscall                  # we are out of here.   
 #sltiu 测试    revise date:2018/3/12 tiger
 #依次输出  0x00001997 0x00001996 0x00001995 0x00001994 0x00001993 0x00001992 0x00001991 0x00001990 0x0000198f 0x0000198e 0x0000198d 0x0000198c 0x0000198b 0x0000198a 0x00001989 0x00001988 0x00001987 0x00001986 0x00001985 0x00001984 0x00001983 0x00001982 0x00001981 0x00001980 0x0000197f 0x0000197e 0x0000197d 0x0000197c 0x0000197b 0x0000197a 0x00001979 0x00001978 0x00001977 0x00001976 0x00001975 0x00001974 0x00001973 0x00001972 0x00001971 0x00001970 0x0000196f 0x0000196e 0x0000196d 0x0000196c 0x0000196b 0x0000196a 0x00001969 0x00001968 0x00001967 0x00001966 0x00001965 0x00001964 0x00001963 0x00001962 0x00001961 0x00001960 0x0000195f 0x0000195e 0x0000195d 0x0000195c 0x0000195b 0x0000195a 0x00001959 0x00001958 0x00001957 0x00001956 0x00001955 0x00001954 0x00001953 0x00001952 0x00001951 0x00001950 0x0000194f 0x0000194e 0x0000194d 0x0000194c 0x0000194b 0x0000194a 0x00001949
@@ -494,7 +494,7 @@ add $s1,$s1,$t0
 sltiu $t1,$s1, 0x1949
 beq $t1,$zero,sltiu_branch
 
-#addi    $v0,$zero,10         # system call for exit
+#addi    $v0,$zero,50         # system call for exit
 syscall                  # we are out of here.   
 #MULTU乘法测试  1111*2*2*2......  revise date:2018/3/12 tiger
 #依次输出  0x00001111 0x00002222 0x00004444 0x00008888 0x00011110 0x00022220 0x00044440 0x00088880 0x00111100 0x00222200 0x00444400 0x00888800 0x01111000 0x02222000 0x04444000 0x08888000 0x11110000 0x22220000 0x44440000 0x88880000 0x11100000 0x22200000 0x44400000 0x88800000 0x11000000 0x22000000 0x44000000 0x88000000 0x10000000 0x20000000 0x40000000 0x80000000 0x00000000
@@ -516,7 +516,7 @@ syscall                  # print
 addi $t3,$t3, -1    
 bne $t3,$zero,multu_branch   #循环8次
 
-#addi    $v0,$zero,10         # system call for exit
+#addi    $v0,$zero,50         # system call for exit
 syscall                  # we are out of here.   
 #divu mflo测试   11110000 /2/2/2  ....  revise date:2018/3/14 tiger
 #依次输出0x11110000 0x08888000 0x04444000 0x02222000 0x01111000 0x00888800 0x00444400 0x00222200 0x00111100 0x00088880 0x00044440 0x00022220 0x00011110 0x00008888 0x00004444 0x00002222 0x00001111 0x00000888 0x00000444 0x00000222 0x00000111 0x00000088 0x00000044 0x00000022 0x00000011 0x00000008 0x00000004 0x00000002 0x00000001
@@ -539,7 +539,7 @@ divu_branch:
  bne $t3,$zero,divu_branch   #循环
 
 
-#addi    $v0,$zero,10         
+#addi    $v0,$zero,50         
 syscall                  # 暂停或退出
 #C2 instruction benchmark
 
@@ -579,7 +579,7 @@ bne $t3,$zero,lb_branch
 
 
 
-#addi    $v0,$zero,10         # system call for exit
+#addi    $v0,$zero,50         # system call for exit
 syscall                  # we are out of here.   
 
 #LBU 测试    revise date:2018/3/12 tiger#
@@ -614,7 +614,7 @@ addi $t1,$t1, 1
 addi $t3,$t3, -1    
 bne $t3,$zero,lbu_branch
 
-#addi    $v0,$zero,10         # system call for exit
+#addi    $v0,$zero,50         # system call for exit
 syscall                  # we are out of here.   
 
 #LH 测试    revise date:2018/3/12 tiger
@@ -649,7 +649,7 @@ addi $t1,$t1, 2
 addi $t3,$t3, -1    
 bne $t3,$zero,lh_branch
 
-#addi    $v0,$zero,10         # system call for exit
+#addi    $v0,$zero,50         # system call for exit
 syscall                  # we are out of here.   
 
 #LHU 测试    revise date:2018/3/12 tiger
@@ -684,7 +684,7 @@ addi $t1,$t1, 2
 addi $t3,$t3, -1    
 bne $t3,$zero,lhu_branch
 
-#addi    $v0,$zero,10         # system call for exit
+#addi    $v0,$zero,50         # system call for exit
 syscall                  # we are out of here.   
 #SB 测试    revise date:2018/3/14 tiger
 #依次输出   0x00000000 0x00000001 0x00000002 0x00000003 0x00000004 0x00000005 0x00000006 0x00000007 0x00000008 0x00000009 0x0000000a 0x0000000b 0x0000000c 0x0000000d 0x0000000e 0x0000000f 0x00000010 0x00000011 0x00000012 0x00000013 0x00000014 0x00000015 0x00000016 0x00000017 0x00000018 0x00000019 0x0000001a 0x0000001b 0x0000001c 0x0000001d 0x0000001e 0x0000001f 0x03020100 0x07060504 0x0b0a0908 0x0f0e0d0c 0x13121110 0x17161514 0x1b1a1918 0x1f1e1d1c
@@ -718,7 +718,7 @@ addi $t1,$t1,4
 addi $t3,$t3, -1    
 bne $t3,$zero,sb_branch
 
-#addi    $v0,$zero,10      # system call for exit
+#addi    $v0,$zero,50      # system call for exit
 syscall                  # we are out of here.   
 #SH 测试    revise date:2018/3/14 tiger
 #依次输出 0x00000001 0x00000002 0x00000003 0x00000004 0x00000005 0x00000006 0x00000007 0x00000008 0x00000009 0x0000000a 0x0000000b 0x0000000c 0x0000000d 0x0000000e 0x0000000f 0x00000010 0x00000011 0x00000012 0x00000013 0x00000014 0x00000015 0x00000016 0x00000017 0x00000018 0x00000019 0x0000001a 0x0000001b 0x0000001c 0x0000001d 0x0000001e 0x0000001f 0x00000020 0x00020001 0x00040003 0x00060005 0x00080007 0x000a0009 0x000c000b 0x000e000d 0x0010000f 0x00120011 0x00140013 0x00160015 0x00180017 0x001a0019 0x001c001b 0x001e001d 0x0020001f
@@ -752,7 +752,7 @@ addi $t1,$t1,4
 addi $t3,$t3, -1    
 bne $t3,$zero,sh_branch
 
-#addi    $v0,$zero,10         # system call for exit
+#addi    $v0,$zero,50         # system call for exit
 syscall                  # we are out of here.   
 #Branch instruction benchmark
 
@@ -769,7 +769,7 @@ addi $s1,$s1,1
 blez $s1,blez_branch   
 
 
-#addi    $v0,$zero,10         
+#addi    $v0,$zero,50         
 syscall                  # 暂停或退出
 #bgtz 测试    大于零跳转  递减运算 ，从正数开始向零运算  revise date:2018/3/12 tiger
 #依次输出0x0000000f 0x0000000e 0x0000000d 0x0000000c 0x0000000b 0x0000000a 0x00000009 0x00000008 0x00000007 0x00000006 0x00000005 0x00000004 0x00000003 0x00000002 0x00000001 
@@ -782,7 +782,7 @@ syscall                  # 输出当前值
 addi $s1,$s1,-1  
 bgtz $s1,bgtz_branch    #当前测试指令
 
-#addi    $v0,$zero,10         
+#addi    $v0,$zero,50         
 syscall                  # 程序暂停或退出
 #bltz 测试    小于0跳转   累加运算，从负数开始向零运算 revise date:2018/3/12 tiger  
 #依次输出0xfffffff1 0xfffffff2 0xfffffff3 0xfffffff4 0xfffffff5 0xfffffff6 0xfffffff7 0xfffffff8 0xfffffff9 0xfffffffa 0xfffffffb 0xfffffffc 0xfffffffd 0xfffffffe 0xffffffff
@@ -795,10 +795,10 @@ addi $s1,$s1,1
 bltz $s1,bltz_branch     #当前指令
 
 
-#addi    $v0,$zero,10    
+#addi    $v0,$zero,50    
 syscall                  #暂停或退出
 #bgez 测试    大于等于零跳转   递减运算 ，从正数开始向零运算revise date:2018/3/12 tiger  
-#依次输出0x0000000f 0x0000000e 0x0000000d 0x0000000c 0x0000000b 0x0000000a 0x00000009 0x00000008 0x00000007 0x00000006 0x00000005 0x00000004 0x00000003 0x000000020 x000000010 x00000000
+#依次输出0x0000000f 0x0000000e 0x0000000d 0x0000000c 0x0000000b 0x0000000a 0x00000009 0x00000008 0x00000007 0x00000006 0x00000005 0x00000004 0x00000003 0x000000020 x000000050 x00000000
 addi $s1,$zero,15  #初始值
 bgez_branch:
 add $a0,$0,$s1          
@@ -807,7 +807,7 @@ syscall                  # 输出当前值
 addi $s1,$s1,-1
 bgez $s1,bgez_branch   #测试指令
 
-#addi    $v0,$zero,10         #停机指令
+#addi    $v0,$zero,50         #停机指令
 syscall                  # 系统调用
                  
 #addi    $v0,$zero,10         # system call for exit

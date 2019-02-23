@@ -67,12 +67,6 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
 
 `ifdef  DEBUG
     assign cp = clk;
-    assign btnr = 1;
-    assign btnl = 0;
-    assign btnc = 0;
-    assign btnu = 0;
-    assign btnd = 0;
-    assign sw = 0;
 `else
     DividerFreq freq_divider(
         .clk(clk),
@@ -171,11 +165,11 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
         .result2(result2)
     );
 
-    Storage storage(
+    MipsRAM ram(
         .addr(ram_addr),
         .din(ram_din),
         .mode(ram_mode),
-        //.Mem_SignExt(mem_signed_ext),
+        .mem_signed_ext(mem_signed_ext),
         .we(MemWrite),
         .clk(clk),
         .rst(rst),
@@ -244,7 +238,7 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
     Counter all_cyc_counter(
         .clk(cp),
         .rst(rst),
-        .count(~pause & clk),
+        .count(~pause),
         .ld(1'b0),
         .data('b0),
         .cnt(all_cyc)

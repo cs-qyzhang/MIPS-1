@@ -1,16 +1,16 @@
 `timescale 1ns / 1ps
 
 /*
-分支跳转信号
+锟斤拷支锟斤拷转锟脚猴拷
 input:
-    R ALU比较运算结果，取第0位
-    Equal ALU比较信号
+    R ALU锟饺斤拷锟斤拷锟斤拷锟斤拷锟斤拷取锟斤拷0位
+    Equal ALU锟饺斤拷锟脚猴拷
     beq
     bne
-    B 4条B类指令，两位
-    rsn 4位，用来区分BLTZ和BGEZ指令
+    B 4锟斤拷B锟斤拷指锟筋，锟斤拷位
+    rsn 4位锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷BLTZ锟斤拷BGEZ指锟斤拷
 output:
-    Branch 分支跳转信号，一位    
+    Branch 锟斤拷支锟斤拷转锟脚号ｏ拷一位    
 */
 module Branch(R,Equal,beq,bne,B,Branch,rt);
     input R,Equal,beq,bne;
@@ -20,9 +20,9 @@ module Branch(R,Equal,beq,bne,B,Branch,rt);
     
     assign Branch = beq ? (Equal ? 1 : 0) :
                     bne ? (Equal ? 0 : 1) :
-                    (B == 2'b01) ? (R||Equal ? 1 : 0) :
-                    (B == 2'b10) ? (R||Equal ? 0 : 1) :
-                    (B == 2'b11) ? (rt == 5'b00000 ? (R ? 1 : 0) : (R ? 0 : 1)) :
+                    (B == 2'b00) ? 0 :
+                    (B == 2'b01) ? ((R|Equal) ? 1 : 0) :
+                    (B == 2'b10) ? ((R|Equal) ? 0 : 1) :
+                    (B == 2'b11) ? ((rt == 5'b00000) ? (R ? 1 : 0) : (R ? 0 : 1)) :
                     (0);
-    
 endmodule

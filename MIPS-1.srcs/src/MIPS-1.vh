@@ -3,7 +3,7 @@
  * 常数定义
  */
 `timescale  1 ns / 1 ps
-
+//`define         DEBUG
 `define         TRUE        1
 `define         FALSE       0
 
@@ -92,7 +92,7 @@
 `define         MFLO_FUNC   6'd18
 
 // Adder width
-`define         ADDR_WIDTH  20
+`define         ADDR_WIDTH  14
 
 // FREQ in HZ
 `define         FREQ_ULTRA_FAST 4000

@@ -16,6 +16,9 @@ module Register(data_in,data_out,clk,rst,inr);
     input clk,rst,inr;
     output reg [DATA_WIDTH-1:0]data_out;
 
+    initial
+        data_out <= 0;
+
     //ÉÏÉıÑØ´¥·¢
     always @ (posedge clk)
     begin 

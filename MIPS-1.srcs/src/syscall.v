@@ -47,10 +47,13 @@ module Syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode,pause_an
                     print <= 1;
                     print_mode <= `PRINT_HEX;
                     pause <= 1;
-                    can_go <= 1;
+                    can_go = 1;
                 end
             else if (go && can_go && pause)
-                pause <= 0;
+                begin
+                    pause <= 0;
+                    can_go = 0;
+                end
             else if (rst)
                 begin
                     led_data   <= 0;
@@ -89,6 +92,12 @@ module Syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode,pause_an
                                 led_data   <= a0;
                                 print      <= 1;
                                 print_mode <= `PRINT_HEX;
+                            end
+                        default:
+                            begin
+                                can_go      = 0;
+                                pause      <= 0;
+                                print      <= 0;
                             end
                     endcase
                 end
