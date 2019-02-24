@@ -27,7 +27,7 @@ module ROM(addr,sel,data);
             $readmemh("/home/qyzhang/ROM_GO.txt",my_rom); 
 `else
             //$readmemh("/media/psf/Home/Desktop/ROM.txt",my_rom);
-            $readmemh("//media/psf/Home/Desktop/ROM_all.txt", my_rom); 
+            $readmemh("//media/psf/Home/Desktop/ROM1.txt", my_rom); 
 `endif
         end
 

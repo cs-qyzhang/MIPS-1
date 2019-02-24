@@ -32,8 +32,9 @@ module main_redirect_test();
         begin
             rst = 1;
             clk = 0;
-            #50 rst<=0;
             go = 0;
+            #50 rst<=0;
+          
             sw[15:0] = 'b0;
             #31000
             sw[15] = 1;

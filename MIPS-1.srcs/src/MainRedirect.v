@@ -43,6 +43,8 @@ module MainRedirect(
 
     wire load_use;
     wire [1:0] r1_forward, r2_forward;
+    wire [31:0] related_data_ex;
+    wire [31:0] related_data_mem;
     // wire [31:0] alu_a;
     wire [31:0] alu_b;
     wire alu_equal;
@@ -265,14 +267,22 @@ module MainRedirect(
         .load_use(load_use)
     );
 
+    assign related_data_ex = (mflo_ex) ? lo_out_ex
+                            : (lui_ex) ? imm_ext_sft_ex
+                            : (jal_ex) ? (pc_ex + 32'd4)
+                            : alu_result_lo_ex;                      
+    assign related_data_mem = (mflo_mem) ? lo_out_mem
+                            : (lui_mem) ? imm_ext_sft_mem
+                            : (jal_mem) ? (pc_mem + 32'd4)
+                            : alu_result_lo_mem;                      
     assign r1_a0_id = (r1_forward == 2'b00) ? reg_r1
-                    : (r1_forward == 2'b01) ? alu_result_lo_ex
-                    : (r1_forward == 2'b10) ? alu_result_lo_mem
-                    : alu_result_lo_ex;
+                    : (r1_forward == 2'b01) ? related_data_ex
+                    : (r1_forward == 2'b10) ? related_data_mem
+                    : related_data_ex;
     assign r2_v0_id = (r2_forward == 2'b00) ? reg_r2
-                    : (r2_forward == 2'b01) ? alu_result_lo_ex
-                    : (r2_forward == 2'b10) ? alu_result_lo_mem
-                    : alu_result_lo_ex;
+                    : (r2_forward == 2'b01) ? related_data_ex
+                    : (r2_forward == 2'b10) ? related_data_mem
+                    : related_data_ex;
     
     //module Jump(pc,ir,rs,rt,beq,bne,j,jr,SignedExt,B_Branch,npc,jump)
     Jump npc_unit(
@@ -366,7 +376,7 @@ module ID_EX(
         .Result2(alu_result_hi_ex)
     );
 
-    Register reglo(
+    Register #(.EDGE(`NEGEDGE))reglo(
         .data_in(alu_result_lo_ex),
         .data_out(lo_out_ex),
         .clk(cp),
@@ -374,7 +384,7 @@ module ID_EX(
         .en(hlen_ex)
     );
 
-    Register reghi(
+    Register  #(.EDGE(`NEGEDGE))reghi(
         .data_in(alu_result_hi_ex),
         .data_out(hi_out_ex),
         .clk(cp),
