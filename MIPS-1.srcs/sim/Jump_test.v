@@ -79,7 +79,7 @@ module Jump_test;
                         .rb(ir[20:16]),
                         .rw(0),
                         .we(RegWrite),
-                        .din(0),
+                        .din(5'b0),
                         .R1(rs),
                         .R2(rt)
                     );
@@ -87,13 +87,13 @@ module Jump_test;
             .npc(npc),
             .rst(rst),
             .clk(clk),
-            .pc_valid(1),
+            .pc_valid(1'b1),
             .pc(pc)     
             );    
                
     ROM #(.ADDR_LEN(18),.DATA_LEN(32)) rom(
                     .addr(pc[19:2]),
-                    .sel(1),
+                    .sel(1'b1),
                     .data(ir)
                 );
         

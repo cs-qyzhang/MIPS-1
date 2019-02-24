@@ -107,7 +107,7 @@ module ID_EX(
             begin
                 {RegWrite_out, Jal_out, Lui_out, MFLO_out, MemToReg_out, Syscall_out, MemSignExt_out,RegDst_out,
                 MemWrite_out,Shamt_out, Hlen_out, AluSrcB_out,
-                MODE_out, AluOP_out, Wback_out,
+                MODE_out, AluOP_out, Wback_out,ImmExt_out,
                 ImmExtSft_out,r2_out,r1_out,pc_out,ir_out}<=0;
             end
             else if(stall)
@@ -118,12 +118,12 @@ module ID_EX(
                 begin
                     {RegWrite_out, Jal_out, Lui_out, MFLO_out, MemToReg_out, Syscall_out, MemSignExt_out,RegDst_out,
                     MemWrite_out,Shamt_out, Hlen_out, AluSrcB_out,
-                    MODE_out, AluOP_out, Wback_out,
+                    MODE_out, AluOP_out, Wback_out,ImmExt_out,
                     ImmExtSft_out,r2_out,r1_out,pc_out,ir_out}
                     <=
                     {RegWrite_in, Jal_in, Lui_in, MFLO_in, MemToReg_in, Syscall_in, MemSignExt_in,RegDst_in,
                     MemWrite_in, Shamt_in, Hlen_in, AluSrcB_in,
-                    MODE_in,AluOP_in,Wback_in,
+                    MODE_in,AluOP_in,Wback_in,ImmExt_in,
                     ImmExtSft_in,r2_in,r1_in,pc_in,ir_in};   
                 end
         end   

@@ -366,7 +366,7 @@ module ID_EX(
         .Result2(alu_result_hi_ex)
     );
 
-    Register reglo(
+    Register #(.EDGE(`NEGEDGE))reglo(
         .data_in(alu_result_lo_ex),
         .data_out(lo_out_ex),
         .clk(cp),
@@ -374,7 +374,7 @@ module ID_EX(
         .en(hlen_ex)
     );
 
-    Register reghi(
+    Register  #(.EDGE(`NEGEDGE))reghi(
         .data_in(alu_result_hi_ex),
         .data_out(hi_out_ex),
         .clk(cp),
