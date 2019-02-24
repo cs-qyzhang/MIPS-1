@@ -92,7 +92,7 @@
 `define         MFLO_FUNC   6'd18
 
 // Adder width
-`define         ADDR_WIDTH  14
+`define         ADDR_WIDTH  12
 
 // FREQ in HZ
 `define         FREQ_ULTRA_FAST 4000

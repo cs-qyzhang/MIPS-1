@@ -99,6 +99,7 @@ module ID_EX(
     output reg [DATA_LEN-1:0]r1_out        = 0;
     output reg [DATA_LEN-1:0]pc_out        = 0;
     output reg [DATA_LEN-1:0]ir_out        = 0;
+
         
     always@(posedge clk)
         begin

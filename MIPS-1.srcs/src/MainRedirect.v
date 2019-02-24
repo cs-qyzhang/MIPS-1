@@ -17,17 +17,48 @@ module MainRedirect(
     output       led16_b, led16_g, led16_r, led17_b, led17_g, led17_r;
     
     wire cp, go, rst;
+    wire prints;
+    wire [3:0]   print_mode;
+    wire pause_and_show;
+    wire [3:0]   show_type;
     wire [31:0] freq;
-
-    wire [31:0] pc_if, ir_if;
 
     wire[5:0]   op, func;
     wire[4:0]   rs, rt, rd;
     // wire[4:0]   shmat;
     wire[15:0]  imm;
     wire[25:0]  imm26;
-    wire[31:0]  imm_ext;
+    //wire[31:0]  imm_ext;
 
+    wire [31:0] RegDin;
+    wire [31:0] led_data;
+    wire [31:0] show_data;
+
+    wire pause;
+    wire pcvalid;
+   
+    wire can_jump;
+    wire [31:0] next_pc;
+    wire [31:0] pc_out;
+
+    wire load_use;
+    wire [1:0] r1_forward, r2_forward;
+    // wire [31:0] alu_a;
+    wire [31:0] alu_b;
+    wire alu_equal;
+    wire [4:0] alu_shamt;
+
+
+    //计数统计
+    wire [31:0] all_cyc_num;//总周期数
+    wire [31:0] jmp_num;//无条件分支数
+    wire [31:0] load_use_num;//load-use次数
+
+
+//IF 
+    wire [31:0] pc_if, ir_if;
+//ID
+    wire [31:0] reg_r1, reg_r2;
     wire [31:0] pc_id, ir_id;
     wire [3:0] alu_op_id;
     wire MemToReg_id;
@@ -49,21 +80,10 @@ module MainRedirect(
     wire hlen_id;
     wire [1:0] mode_id;
     wire [1:0] b_branch_id;
-
     wire [4:0] id_r1, id_r2, id_wb;//寄存器地址
     wire [31:0] imm_ext_id, imm_ext_sft_id;
     wire [31:0] r1_a0_id, r2_v0_id;
-
-    wire [31:0] RegDin;
-
-    wire pcvalid;
-    wire can_jump;
-    wire [31:0] next_pc;
-    wire [31:0] pc_out;
-
-    wire load_use;
-    wire [1:0] r1_forward, r2_forward;
-
+//EX
     wire [31:0] alu_result_lo_ex;
     wire [31:0] alu_result_hi_ex;
     wire RegWrite_ex;
@@ -76,6 +96,8 @@ module MainRedirect(
     wire mem_signed_ext_ex;
     wire MemWrite_ex;
     wire [1:0] mode_ex;
+    wire [31:0] lo_out_ex;
+    wire [31:0] hi_out_ex;
     wire shamt_src_ex;
     wire hlen_ex;
     wire alu_src_ex;
@@ -84,13 +106,8 @@ module MainRedirect(
     wire [31:0] r1_a0_ex, r2_v0_ex;
     wire [31:0] pc_ex, ir_ex;
     wire [4:0] wb_ex;
-
-    // wire [31:0] alu_a;
-    wire [31:0] alu_b;
-    wire alu_equal;
-    wire [4:0] alu_shamt;
-    wire [31:0] lo_out_ex, hi_out_ex;
     
+//MEM
     wire [31:0] alu_result_lo_mem;
     wire [31:0] alu_result_hi_mem;
     wire RegWrite_mem;
@@ -109,7 +126,8 @@ module MainRedirect(
     wire [31:0] pc_mem, ir_mem;
     wire [31:0] mem_out_mem;
     wire [4:0] wb_mem;
-
+    
+//WB
     wire RegWrite_wb;
     wire RegDst_wb;
     wire syscall_wb;
@@ -125,16 +143,9 @@ module MainRedirect(
     wire [31:0] mem_out_wb;
     wire [4:0] wb_wb;
 
-    wire [31:0] reg_r1, reg_r2;
 
 `ifdef  DEBUG
     assign cp = clk;
-    assign btnr = 1;
-    assign btnl = 0;
-    assign btnc = 0;
-    assign btnu = 0;
-    assign btnd = 0;
-    assign sw = 0;
 `else
     DividerFreq freq_divider(
         .clk(clk),
@@ -145,23 +156,25 @@ module MainRedirect(
     assign rst = btnl;
 `endif
 
+
+    assign pcvalid = ~pause;
     Register reg_pc(
         .data_in(next_pc),
         .data_out(pc_if),
-        .clk(clk),
+        .clk(cp),
         .rst(rst),
-        .inr((pcvalid) & (~load_use))
+        .en((pcvalid) & (~load_use))
     );
-
+      
     ROM #(.ADDR_LEN(`ADDR_WIDTH-2), .DATA_LEN(32)) pc_rom(
         .addr(pc_if[`ADDR_WIDTH-1:2]),
-        .sel(1), //rom_sel=1
+        .sel(1'b1), //rom_sel=1
         .data(ir_if)
     );
 
     IF_ID ifIdPiped(
-        .clk(clk),
-        .rst(rst),
+        .clk(cp),
+        .rst(rst|can_jump),
         .stall(load_use),
         .pc_in(pc_if),
         .ir_in(ir_if),
@@ -169,11 +182,11 @@ module MainRedirect(
         .ir_out(ir_id)
     );
 
+
     assign op = ir_id[31:26];
-    assign rs = ir_id[25:31];
+    assign rs = ir_id[25:21];
     assign rt = ir_id[20:16];
     assign rd = ir_id[15:11];
-    // assign shamt = ir_id[10:6];
     assign func = ir_id[5:0];
     assign imm = ir_id[15:0];
     assign imm26 = ir_id[25:0];
@@ -203,10 +216,13 @@ module MainRedirect(
         .b_branch(b_branch_id)
     );
 
+
     assign id_r1 = (syscall_id) ? 5'h4 : rs;
+    
     assign id_r2 = (b_branch_id[1] | b_branch_id[0]) ? 5'h0
                     : (syscall_id) ? 5'h2
                     : rt;
+                    
     assign id_wb = (jal_id) ? 5'h1f
                     :(RegDst_id) ? rd
                     : rt;
@@ -217,15 +233,16 @@ module MainRedirect(
         .sel(SignedExt_id)
     );
 
-    //以下代码功能为移位
+    //以下代码功能为移位 
     assign imm_ext_sft_id[31:16] = imm;
-    assign imm_ext_sft_id[15:0] = 16'd0;
+    assign imm_ext_sft_id[15:0] =  'b0;
 
+//module RegFile(clk,ra,rb,rw,we,din,R1,R2);
     RegFile regfile(
-        .clk(clk),
+        .clk(cp),
         .ra(id_r1),
         .rb(id_r2),
-        .rw(id_wb),
+        .rw(wb_wb),
         .we(RegWrite_wb),
         .din(RegDin),
         .R1(reg_r1),
@@ -239,7 +256,7 @@ module MainRedirect(
         .mem_regwrite(RegWrite_mem),
         .id_r1(id_r1),
         .id_r2(id_r2),
-        .mem_extoreg(MemToReg_mem),
+        .mem_memtoreg(MemToReg_mem),
         .ex_memtoreg(MemToReg_ex),
         .ex_wb(wb_ex),
         .mem_wb(wb_mem),
@@ -257,29 +274,39 @@ module MainRedirect(
                     : (r2_forward == 2'b10) ? alu_result_lo_mem
                     : alu_result_lo_ex;
     
-    //原有的npc
-    //稍有疑问，等下问邓昊
+    //module Jump(pc,ir,rs,rt,beq,bne,j,jr,SignedExt,B_Branch,npc,jump)
     Jump npc_unit(
-        .PC(pc_id),
-        .IR(ir_id),
-        .RS(r1_a0_id),
-        .RT(r2_v0_id),
-        .BEQ(beq_id),
-        .BNE(bne_id),
-        .J(jmp_id),
-        .JR(jr_id),
+        .pc(pc_id),
+        .ir(ir_id),
+        .rs(r1_a0_id),
+        .rt(r2_v0_id),
+        .beq(beq_id),
+        .bne(bne_id),
+        .j(jmp_id),
+        .jr(jr_id),
         .SignedExt(SignedExt_id),
         .B_Branch(b_branch_id),
-        .NPC(pc_out),
-        .JUMP(can_jump)
+        .npc(pc_out),
+        .jump(can_jump)
     );
 
     assign next_pc = (can_jump) ? pc_out : (pc_if + 32'd4);
-
+/*
+module ID_EX(
+    clk,rst,stall, //always
+    RegWrite_in, Jal_in, Lui_in, MFLO_in, MemToReg_in, Syscall_in, MemSignExt_in,RegDst_in,//in
+    MemWrite_in, MODE_in, Shamt_in, Hlen_in, AluSrcB_in, AluOP_in, ImmExt_in,//in
+    ImmExtSft_in, r2_in, r1_in, pc_in, ir_in, Wback_in,//in
+    
+    RegWrite_out, Jal_out, Lui_out, MFLO_out, MemToReg_out, Syscall_out, MemSignExt_out,RegDst_out,//out
+    MemWrite_out, MODE_out, Shamt_out, Hlen_out, AluSrcB_out, AluOP_out, ImmExt_out,//out
+    ImmExtSft_out, r2_out, r1_out, pc_out, ir_out,Wback_out //out 
+    );
+*/
     ID_EX idExPiped(
-        .clk(clk),
+        .clk(cp),
         .rst(rst | load_use),
-        .stall(0),
+        .stall(1'b0),
         .RegWrite_in(RegWrite_id),
         .Jal_in(jal_id),
         .Lui_in(lui_id),
@@ -328,6 +355,7 @@ module MainRedirect(
     assign alu_b = (alu_src_ex) ? imm_ext_ex : r2_v0_ex;
     assign alu_shamt = (shamt_src_ex) ? (r1_a0_ex[4:0]) : (ir_ex[10:6]);
 
+    //module ALU(A,B,Shmat,AluOp,Equal,Result,Result2);
     ALU alu_unit(
         .A(r1_a0_ex),
         .B(alu_b),
@@ -341,52 +369,85 @@ module MainRedirect(
     Register reglo(
         .data_in(alu_result_lo_ex),
         .data_out(lo_out_ex),
-        .clk(clk),
+        .clk(cp),
         .rst(rst),
-        .inr(hlen_ex)
+        .en(hlen_ex)
     );
 
     Register reghi(
         .data_in(alu_result_hi_ex),
         .data_out(hi_out_ex),
-        .clk(clk),
+        .clk(cp),
         .rst(rst),
-        .inr(hlen_ex)
+        .en(hlen_ex)
     );
 
     EX_MEM exMemPiped(
-        .clk(clk),
+        .clk(cp),
         .rst(rst),
-        .stall(0),
-        .RegWrite_out(RegWrite_ex),
-        .Jal_out(jal_ex),
-        .Lui_out(lui_ex),
-        .MFLO_out(mflo_ex),
-        .MemToReg_out(MemToReg_ex),
-        .Syscall_out(syscall_ex),
-        .MemSignExt_out(mem_signed_ext_ex),
-        .RegDst_out(RegDst_ex),
-        .MemWrite_out(MemWrite_ex),
-        .MODE_out(mode_ex),
+        .stall(1'b0),
+        .RegWrite_in(RegWrite_ex),
+        .Jal_in(jal_ex),
+        .Lui_in(lui_ex),
+        .MFLO_in(mflo_ex),
+        .MemToReg_in(MemToReg_ex),
+        .Syscall_in(syscall_ex),
+        .MemSignExt_in(mem_signed_ext_ex),
+        .RegDst_in(RegDst_ex),
+        .MemWrite_in(MemWrite_ex),
+        .MODE_in(mode_ex),
         .LO_R_in(alu_result_lo_ex),
         .LO_Out_in(lo_out_ex),
-        .ImmExt_out(imm_ext_ex),
-        .ImmExtSft_out(imm_ext_sft_ex),
-        .r2_out(r2_v0_ex),
-        .r1_out(r1_a0_ex),
-        .pc_out(pc_ex),
-        .ir_out(ir_ex),
-        .Wback_out(wb_ex),//stage: ex
+        .ImmExt_in(imm_ext_ex),
+        .ImmExtSft_in(imm_ext_sft_ex),
+        .r2_in(r2_v0_ex),
+        .r1_in(r1_a0_ex),
+        .pc_in(pc_ex),
+        .ir_in(ir_ex),
+        .Wback_in(wb_ex),//stage: ex
+        .RegWrite_out(RegWrite_mem),
+        .Jal_out(jal_mem),
+        .Lui_out(lui_mem),
+        .MFLO_out(mflo_mem),
+        .MemToReg_out(MemToReg_mem),
+        .Syscall_out(syscall_mem),
+        .MemSignExt_out(mem_signed_ext_mem),
+        .RegDst_out(RegDst_mem),
+        .MemWrite_out(MemWrite_mem),
+        .MODE_out(mode_mem),
+        .LO_R_out(alu_result_lo_mem),
+        .LO_Out_out(lo_out_mem),
+        .ImmExt_out(imm_ext_mem),
+        .ImmExtSft_out(imm_ext_sft_mem),
+        .r2_out(r2_v0_mem),
+        .r1_out(r1_a0_mem),
+        .pc_out(pc_mem),
+        .ir_out(ir_mem),
+        .Wback_out(wb_mem)//stage: mem
+    );
+//module MipsRAM(addr, din, mode, we, clk, rst, dout, mem_signed_ext);
+    MipsRAM mipsDataRam(
+        .addr(alu_result_lo_mem[`ADDR_WIDTH-1:0]),
+        .din(r2_v0_mem),
+        .mode(mode_mem),
+        .we(MemWrite_mem),
+        .clk(cp),
+        .rst(rst),
+        .dout(mem_out_mem),
+        .mem_signed_ext(mem_signed_ext_mem)
+    );
+
+    MEM_WB memWbPiped(
+        .clk(cp),
+        .rst(rst),
+        .stall(1'b0),
         .RegWrite_in(RegWrite_mem),
         .Jal_in(jal_mem),
         .Lui_in(lui_mem),
         .MFLO_in(mflo_mem),
         .MemToReg_in(MemToReg_mem),
         .Syscall_in(syscall_mem),
-        .MemSignExt_in(mem_signed_ext_mem),
         .RegDst_in(RegDst_mem),
-        .MemWrite_in(MemWrite_mem),
-        .MODE_in(mode_mem),
         .LO_R_in(alu_result_lo_mem),
         .LO_Out_in(lo_out_mem),
         .ImmExt_in(imm_ext_mem),
@@ -395,39 +456,9 @@ module MainRedirect(
         .r1_in(r1_a0_mem),
         .pc_in(pc_mem),
         .ir_in(ir_mem),
-        .Wback_in(wb_mem)//stage: mem
-    );
-
-    MipsRAM mipsDataRam(
-        .addr(alu_result_lo_mem[`ADDR_WIDTH-1:0]),
-        .din(r2_v0_mem),
-        .mode(mode_mem),
-        .we(MemWrite_mem),
-        .clk(clk),
-        .rst(rst),
-        .dout(mem_out_mem)
-    );
-
-    MEM_WB memWbPiped(
-        .clk(clk),
-        .rst(rst),
-        .stall(0),
-        .RegWrite_out(RegWrite_mem),
-        .Jal_out(jal_mem),
-        .Lui_out(lui_mem),
-        .MFLO_out(mflo_mem),
-        .MemToReg_out(MemToReg_mem),
-        .Syscall_out(syscall_mem),
-        .RegDst_out(RegDst_mem),
-        .LO_R_in(alu_result_lo_mem),
-        .LO_Out_in(lo_out_mem),
-        .ImmExt_out(imm_ext_mem),
-        .ImmExtSft_out(imm_ext_sft_mem),
-        .r2_out(r2_v0_mem),
-        .r1_out(r1_a0_mem),
-        .pc_out(pc_mem),
-        .ir_out(ir_mem),
-        .Wback_out(wb_mem),//stage: mem
+        .Wback_in(wb_mem),//stage: mem
+        .MemOut_in(mem_out_mem),//new
+        .MemOut_out(mem_out_wb),
         .RegWrite_out(RegWrite_wb),
         .Jal_out(jal_wb),
         .Lui_out(lui_wb),
@@ -435,8 +466,8 @@ module MainRedirect(
         .MemToReg_out(MemToReg_wb),
         .Syscall_out(syscall_wb),
         .RegDst_out(RegDst_wb),
-        .LO_R_in(alu_result_lo_wb),
-        .LO_Out_in(lo_out_wb),
+        .LO_R_out(alu_result_lo_wb),
+        .LO_Out_out(lo_out_wb),
         .ImmExt_out(imm_ext_wb),
         .ImmExtSft_out(imm_ext_sft_wb),
         .r2_out(r2_v0_wb),
@@ -446,8 +477,11 @@ module MainRedirect(
         .Wback_out(wb_wb)//stage: wb
     );
 
+    assign show_data = (show_type == `SHOW_ALL_CYC) ? all_cyc_num :
+                                       ( (show_type == `SHOW_BRANCH_NUM) ? load_use_num: 
+                                       ( (show_type == `SHOW_JMP_NUM) ? jmp_num : all_cyc_num) );
     Syscall syacall_unit(
-        .clk(clk),
+        .clk(cp),
         .rst(rst),
         .syscall(syscall_wb),
         .go(go),
@@ -456,7 +490,9 @@ module MainRedirect(
         .led_data(led_data),
         .pause(pause),
         .print(prints),
-        .print_mode(print_mode)
+        .print_mode(print_mode),
+        .pause_and_show(pause_and_show),
+        .show_data(show_data)
     );
 
     assign RegDin = (mflo_wb) ? lo_out_wb
@@ -464,5 +500,66 @@ module MainRedirect(
                     : (jal_wb) ? (pc_wb + 32'd4)
                     : (MemToReg_wb) ? mem_out_wb
                     : alu_result_lo_wb;
+
+    Counter all_cyc_counter(
+        .clk(cp),
+        .rst(rst),
+        .count(pcvalid),
+        .ld(1'b0),
+        .data(32'd0),
+        .cnt(all_cyc_num)
+    );
+
+    Counter jmp_counter(
+        .clk(cp),
+        .rst(rst),
+        .count(jmp_id | jr_id),
+        .ld(1'b0),
+        .data(32'd0),
+        .cnt(jmp_num)
+    );
+
+    Counter load_use_counter(
+        .clk(cp),
+        .rst(rst),
+        .count(load_use),
+        .ld(1'b0),
+        .data(32'd0),
+        .cnt(load_use_num)
+    );
+
+    Print #(.SHOW_WIDTH(32)) printf(
+        .data(led_data),
+        .prints(prints),
+        .print_mode(print_mode),
+        .clk(clk),
+        .an(an),
+        .seg(seg)
+    );
+
+    Led leds(
+        .pause(pause),
+        .led(led),
+        .led16_b(led16_b),
+        .led16_g(led16_g),
+        .led16_r(led16_r),
+        .led17_b(led17_b),
+        .led17_g(led17_g),
+        .led17_r(led17_r)
+    );
+
+    Input inputs(
+        .btnl(btnl),
+        .btnr(btnr),
+        .btnc(btnc),
+        .btnu(btnu),
+        .btnd(btnd),
+        .sw(sw),
+        .go(go),
+        .rst(rst),
+        .freq(freq),
+        .pause_and_show(pause_and_show),
+        .show_type(show_type)
+    );
 
 endmodule
