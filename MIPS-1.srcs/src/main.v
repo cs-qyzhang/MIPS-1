@@ -36,6 +36,7 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
     wire        jr, jmp, jal;
     wire        lui, mflo;
     wire        hlen;
+    wire        eret, mfc0, mtc0;
 
     wire[1:0]   b_branch;
     wire        branch;
@@ -54,7 +55,7 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
     wire[1:0]   ram_mode;
 
     wire[`ADDR_WIDTH-1:0]  ins_addr;
-    wire[31:0] ins;
+    wire[31:0]  ins;
     wire        rom_sel;
 
     wire[31:0]  a0, v0;
@@ -65,6 +66,18 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
 
     wire[31:0]  jmp_num, branch_num, all_cyc;
     wire[31:0]  freq;
+
+    wire        interrupt_request, interrupt_begin, interrupt_finish;
+    wire        interrupt_en_in, interrupt_en_out, nmi_in, nmi_out;
+    wire        interrupt_enable, interrupt_disable, interrupt;
+    wire[31:0]ebase;
+    wire[7:0]   cause_ip_in, cause_ip_out, status_im;
+    wire            cp0_we;
+    wire[4:0]   cp0_ra, cp0_rw;
+    wire[31:0]  cp0_din, cp0_dout, epc_in, epc_out;
+    wire[1:0]   software_interrupt;
+    wire[5:0]   hardware_interrupt;
+    wire[`ADDR_WIDTH-1:0]exception_handle_addr;
 
 `ifdef  DEBUG
     assign cp = clk;
@@ -78,8 +91,49 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
     assign rst = btnl;
 `endif
 
+    CP0 cp0(
+        .clk(cp),
+        .rst(rst),
+        .we(cp0_we),
+        .din(cp0_din),
+        .dout(cp0_dout),
+        .rw(cp0_rw),
+        .ra(cp0_ra),
+        .status_im(status_im),
+        .cause_ip_in(cause_ip_out),
+        .cause_ip_out(cause_ip_in),
+        .ebase(ebase),
+        .interrupt_en_in(interrupt_en_out),
+        .interrupt_en_out(interrupt_en_in),
+        .nmi_in(nmi_out),
+        .nmi_out(nmi_in),
+        .epc_in(epc_in),
+        .epc_out(epc_out)
+    );
+
+    InterruptGeneration interrupt_generation(
+        .clk(clk),
+        .rst(rst),
+        .cause_ip_in(cause_ip_in),
+        .cause_ip_out(cause_ip_out),
+        .status_im(status_im),
+        .ebase(ebase),
+        .hw(hardware_interrupt),
+        .sw(software_interrupt),
+        .interrupt_en_in(interrupt_en_in),
+        .interrupt_en_out(interrupt_en_out),
+        .interrupt_begin(interrupt_begin),
+        .interrupt_finish(interrupt_en_out),
+        .interrupt(interrupt),
+        .exception_handle_addr(exception_handle_addr),
+        .epc(epc_in),
+        .interrupt_disable(interrupt_disable),
+        .interrupt_enable(interrupt_enable),
+        .npc(npc)
+    );
+
     Pc reg_pc(
-        .npc(npc),
+        .npc(interrupt_begin ? exception_handle_addr : npc),
         .rst(rst),
         .clk(cp),
         .pc_valid(~pause),
@@ -104,7 +158,9 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
         .rs(npc_rs),
         .jr(jr),
         .jmp(jmp),
-        .npc(npc)
+        .npc(npc),
+        .epc(epc_out),
+        .interrupt_finish(interrupt_finish)
     );
 
     Controller controller(
@@ -129,7 +185,12 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
         .mflo(mflo),
         .hlen(hlen),
         .mode(ram_mode),
-        .b_branch(b_branch)
+        .b_branch(b_branch),
+        .rs(rs),
+        .mfc0(mfc0),
+        .mtc0(mtc0),
+        .eret(eret),
+        .cp0_we(cp0_we)
     );
 
     Extender extender(
@@ -233,7 +294,8 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
         .rst(rst),
         .freq(freq),
         .pause_and_show(pause_and_show),
-        .show_type(show_type)
+        .show_type(show_type),
+        .hardware_interrupt(hardware_interrupt)
     );
 
     Counter all_cyc_counter(
@@ -292,10 +354,17 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
     assign regfile_din = mflo ? lo_out : 
                          (lui ? ({imm,16'b0}) :
                          (jal ? (pc + 32'd4) :
-                         (MemToReg ? ram_dout : result)));
+                         (MemToReg ? ram_dout :
+                         (mfc0 ? cp0_dout : result))));
 
     assign show_data = (show_type == `SHOW_ALL_CYC) ? all_cyc :
                                        ( (show_type == `SHOW_BRANCH_NUM) ? branch_num : 
                                        ( (show_type == `SHOW_JMP_NUM) ? jmp_num : all_cyc) );
+
+    assign interrupt_finish = eret;
+    assign cp0_rw = rd;
+    assign cp0_ra = rd;
+    assign cp0_din = R2;
+    assign software_interrupt = 0;
 
 endmodule

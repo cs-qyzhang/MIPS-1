@@ -63,6 +63,9 @@
 `define         ORI_OP      6'd13
 `define         XORI_OP     6'd14
 `define         LUI_OP      6'd15
+`define         MFC0_OP     6'd16
+`define         MTC0_OP     6'd16
+`define         ERET_OP     6'd16
 `define         LB_OP       6'd32
 `define         LH_OP       6'd33
 `define         LW_OP       6'd35

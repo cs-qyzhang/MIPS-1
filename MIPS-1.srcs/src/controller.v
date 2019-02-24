@@ -15,7 +15,7 @@
  * TODO: 使用verilog udp真值表描述？
  */
 module Controller(
-  op_code, func,
+  op_code, func, rs,
   alu_op,
   MemToReg, MemWrite,
   alu_src, shamt_src,
@@ -27,11 +27,13 @@ module Controller(
   lui, mflo,
   hlen,
   mode,
-  b_branch
+  b_branch,
+  mfc0, mtc0, eret, cp0_we
   );
 
   input [5:0] op_code;
   input [5:0] func;
+  input [4:0] rs;
 
   output [3:0] alu_op;
   output MemToReg, MemWrite;
@@ -45,6 +47,7 @@ module Controller(
   output hlen;
   output [1:0] mode;
   output [1:0] b_branch;
+  output mfc0, mtc0, eret, cp0_we;
 
   wire sll, sra, srl;
   wire add, addu;
@@ -120,6 +123,11 @@ module Controller(
   assign bltz = (op_code == `BLTZ_OP);
   assign bgez = (op_code == `BGEZ_OP);
 
+  assign mfc0 = (op_code == `MFC0_OP) & (rs == 5'b0);
+  assign mtc0 = (op_code == `MTC0_OP) & (rs == 5'b00100);
+
+  assign eret = (op_code == `ERET_OP) & (rs[4] == 1'b1);
+
   assign alu_op = (sll | sllv) ? `ALU_SLL:
                   (sra | srav) ? `ALU_SRA:
                   (srl | srlv) ? `ALU_SRL:
@@ -157,7 +165,8 @@ module Controller(
                     Xor | Xori |
                     lui | sltiu |
                     mflo |
-                    lb | lbu | lh | lhu;
+                    lb | lbu | lh | lhu |
+                    mfc0;
   assign SignedExt = addi | addiu |
                       slti |
                       lw | sw |
@@ -184,5 +193,7 @@ module Controller(
   assign mem_signed_ext = (lb | lh);
   assign b_branch[1] = (bgtz | bltz | bgez);
   assign b_branch[0] = (blez | bltz | bgez);
+  
+  assign cp0_we = mtc0;
 
 endmodule
