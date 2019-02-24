@@ -23,9 +23,10 @@ module IF_ID(
     input clk,rst,stall;
     input [DATA_LEN-1:0]pc_in;
     input [ADDR_LEN-1:0]ir_in;
-    
+
     output reg [DATA_LEN-1:0]pc_out = 0;
     output reg [ADDR_LEN-1:0]ir_out = 0;
+
      
     always@(posedge clk)
         begin
@@ -34,14 +35,14 @@ module IF_ID(
                 pc_out<=0;
                 ir_out<=0;
              end
-           else if(!stall)
+           else if(stall)
              begin
               ;
              end
            else
             begin
                 pc_out<=pc_in;
-                ir_out<=ir_out;
+                ir_out<=ir_in;
             end
         end
     

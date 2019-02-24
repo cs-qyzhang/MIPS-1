@@ -5,8 +5,8 @@
  * controller
  * 
  * input:
- *    op_code
- *    func
+ *    [5:0] op_code
+ *    [5:0] func
  *
  * output:
  *    alu_op: alu功能选择

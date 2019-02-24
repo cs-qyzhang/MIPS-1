@@ -19,6 +19,7 @@ module MEM_WB(
     input [4:0]Wback_in;
     input [DATA_LEN-1:0] MemOut_in, ImmExt_in, ImmExtSft_in, r2_in, r1_in, pc_in, ir_in, LO_R_in,LO_Out_in;
     
+
     output reg RegWrite_out                = 0;
     output reg Jal_out                     = 0;
     output reg Lui_out                     = 0;
@@ -38,7 +39,7 @@ module MEM_WB(
     output reg [DATA_LEN-1:0]pc_out        = 0;
     output reg [DATA_LEN-1:0]ir_out        = 0;
 
-    always 
+    always @(posedge clk)
         begin
             if(rst)
                 begin
@@ -61,4 +62,5 @@ module MEM_WB(
                     MemOut_in, ImmExt_in, ImmExtSft_in, r2_in, r1_in, pc_in, ir_in};
                 end
         end
+
 endmodule
