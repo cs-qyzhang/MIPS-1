@@ -26,10 +26,10 @@ module MipsRAM(addr, din, mode, we, clk, rst, dout, mem_signed_ext);
     integer i;
     
     assign  ext_data    = mem_signed_ext ? {8{ram[addr][7]}} : 8'b0;
-    assign  dout[7:0]   = ram[addr + ((mode == 2'b00) ? 'd3 : ((mode == 2'b10) ? 'd1 : 'd0))][7:0];
-    assign  dout[15:8]  = (mode == 2'b01) ? ext_data : ram[addr + ((mode == 2'b00) ? 'd2 : 'd0)][7:0];
-    assign  dout[23:16] = (mode == 2'b01 || mode == 2'b10) ? ext_data : ram[addr + 'd1][7:0];
-    assign  dout[31:24] = (mode == 2'b00) ? ram[addr][7:0] : ext_data;
+    assign  dout[7:0]   = ram[addr + ((mode == 2'b00) ? 'd3 : ((mode == 2'b10) ? 'd1 : 'd0))];
+    assign  dout[15:8]  = (mode == 2'b01) ? ext_data : ram[addr + ((mode == 2'b00) ? 'd2 : 'd0)];
+    assign  dout[23:16] = (mode == 2'b01 || mode == 2'b10) ? ext_data : ram[addr + 'd1];
+    assign  dout[31:24] = (mode == 2'b00) ? ram[addr] : ext_data;
 
     initial
         begin

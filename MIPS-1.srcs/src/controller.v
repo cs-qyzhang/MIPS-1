@@ -159,8 +159,6 @@ module Controller(
                     mflo |
                     lb | lbu | lh | lhu;
   assign SignedExt = addi | addiu |
-                      beq | bne |
-                      blez | bgtz | bltz | bgez |
                       slti |
                       lw | sw |
                       sltiu |
@@ -185,6 +183,6 @@ module Controller(
   assign mode[0] = (lb | lbu | sb);
   assign mem_signed_ext = (lb | lh);
   assign b_branch[1] = (bgtz | bltz | bgez);
-  assign b_branch[0] = (blez | bgtz | bgez);
+  assign b_branch[0] = (blez | bltz | bgez);
 
 endmodule
