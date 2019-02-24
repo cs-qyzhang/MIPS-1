@@ -32,21 +32,21 @@ module ALU(A,B,Shmat,AluOp,Equal,Result,Result2);
         begin
             case (AluOp)
                 `ALU_SLL: begin Result = B << $unsigned(Shmat); Result2 = 0; end
-                `ALU_SRL: begin Result = B >> Shmat;  Result2 = 0; end
+                `ALU_SRL: begin Result = B >> $unsigned(Shmat);  Result2 = 0; end
                 `ALU_SRA: begin
                                 Result = $signed(B) >>> Shmat;
                                 Result2 = 0;
                           end
                 `ALU_MUL:
                     begin
-                        mul_result = $signed(A) * $signed(B);
+                        mul_result = $unsigned(A) * $unsigned(B);
                         Result = mul_result[31:0];
                         Result2 = mul_result[63:32];
                     end
                 `ALU_DIV:
                     begin
-                        Result = $signed(A) / $signed(B);
-                        Result2 = $signed(A) % $signed(B);
+                        Result = $unsigned(A) / $unsigned(B);
+                        Result2 = $unsigned(A) % $unsigned(B);
                     end
                 `ALU_ADD:  begin Result = A + B;    Result2 = 0; end
                 `ALU_SUB:  begin Result = A - B;    Result2 = 0; end
@@ -55,11 +55,11 @@ module ALU(A,B,Shmat,AluOp,Equal,Result,Result2);
                 `ALU_XOR:  begin Result = A ^ B;    Result2 = 0; end
                 `ALU_NOR:  begin Result = ~(A | B); Result2 = 0; end
                 `ALU_SLT:  begin
-                                 Result = ($signed(A) < $signed(B)) ? 1 : 0;
+                                 Result = ($signed(A) < $signed(B)) ? 32'b01 : 32'b0;
                                  Result2 = 0;
                            end
                 `ALU_SLTU: begin
-                                 Result = ($unsigned(A) < $unsigned(B)) ? 1 : 0;
+                                 Result = ($unsigned(A) < $unsigned(B)) ? 32'b01 : 32'b0;
                                  Result2 = 0;
                            end
                 default:   begin Result = 0; Result2 = 0; end

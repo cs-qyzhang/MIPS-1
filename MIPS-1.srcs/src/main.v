@@ -1,6 +1,7 @@
 `timescale 1ns / 1ps
 `include "MIPS-1.vh"
 
+// MULTU, DIVU, MFLO, LB, LBU, LH, LHU,SB,SBU(大小端？), BLTZ
 /*
  * 顶层模块
  *
@@ -85,12 +86,12 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
         .pc(pc)
     );
 
-    Register reg_lo(
+    Register #(.EDGE(`NEGEDGE))reg_lo(
         .data_in(result),
         .data_out(lo_out),
         .clk(clk),
         .rst(rst),
-        .en(mflo)
+        .en((op == `ZERO_OP) && ((func == `DIVU_FUNC) || (func == `MULTU_FUNC)))
     );
 
     Npc npcs(
@@ -279,7 +280,7 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
 
     assign A    = R1;
     assign B    = alu_src ? imm_ext : R2;
-    assign alu_shmat = shmat_src ? R1 : shmat;
+    assign alu_shmat = shmat_src ? R1[4:0] : shmat;
     
     assign a0 = R1;
     assign v0 = R2;
@@ -289,8 +290,8 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
     assign ram_addr = result[`ADDR_WIDTH-1:0];
 
     assign regfile_din = mflo ? lo_out : 
-                         (lui ? (imm << 'h10) :
-                         (jal ? (pc + 4) :
+                         (lui ? ({imm,16'b0}) :
+                         (jal ? (pc + 32'd4) :
                          (MemToReg ? ram_dout : result)));
 
     assign show_data = (show_type == `SHOW_ALL_CYC) ? all_cyc :
