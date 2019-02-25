@@ -38,12 +38,16 @@ module main_test();
             go = 0;
             sw[15:0] = 'b0;
             #518
+            btnd = 1;
+            #30
+            btnd = 0;
+            #600
             btnc = 1;
             #30
             btnc = 0;
-            #500
+            #20
             btnu = 1;
-            #30
+            #20
             btnu = 0;
             #31000
             sw[15] = 1;

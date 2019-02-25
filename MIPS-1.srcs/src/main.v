@@ -8,7 +8,8 @@
  */
 module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
             an,seg,led,led16_b,led16_g,led16_r,led17_b,led17_g,led17_r);
-    input       clk, btnl, btnr, btnc, btnu, btnd;
+
+    input        clk, btnl, btnr, btnc, btnu, btnd;
     input[15:0]  sw;
     output[7:0]  an, seg;
     output[15:0] led;
@@ -67,9 +68,8 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
     wire[31:0]  jmp_num, branch_num, all_cyc;
     wire[31:0]  freq;
 
-    wire        interrupt_request, interrupt_begin, interrupt_finish;
-    wire        interrupt_en_in, interrupt_en_out, nmi_in, nmi_out;
-    wire        interrupt_enable, interrupt_disable, interrupt;
+    wire        interrupt_request, interrupt_begin, interrupt_finish, interrupt_finish_after;
+    wire        interrupt_en, nmi_in, nmi_out, interrupt;
     wire[31:0]ebase;
     wire[7:0]   cause_ip_in, cause_ip_out, status_im;
     wire            cp0_we;
@@ -77,6 +77,7 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
     wire[31:0]  cp0_din, cp0_dout, epc;
     wire[1:0]   software_interrupt;
     wire[5:0]   hardware_interrupt;
+    wire[3:0]   interrupt_state;
     wire[`ADDR_WIDTH-1:0]exception_handle_addr;
 
 `ifdef  DEBUG
@@ -96,7 +97,7 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
     assign led[1]  = interrupt;
     assign led[2]  = interrupt_begin;
     assign led[3]  = interrupt_finish;
-    assign led[4]  = interrupt_en_in;
+    assign led[4]  = interrupt_en;
     assign led[5]  = 0;
     assign led[6]  = 0;
     assign led[7]  = 0;
@@ -110,6 +111,11 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
     assign led[15] = 0;
     
     
+    Rst rsts(
+        .clk(cp),
+        .rst_button(btnl),
+        .rst(rst)
+    );
 
     assign nmi_out = 0;
     CP0 cp0(
@@ -124,18 +130,17 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
         .cause_ip_in(cause_ip_out),
         .cause_ip_out(cause_ip_in),
         .ebase(ebase),
-        .interrupt_en_in(interrupt_en_out),
-        .interrupt_en_out(interrupt_en_in),
+        .interrupt_en(interrupt_en),
         .nmi_in(nmi_out),
         .nmi_out(nmi_in),
         .epc_in(npc),
         .epc_out(epc),
         .interrupt_begin(interrupt_begin),
+        .interrupt_finish(interrupt_finish_after),
+        .interrupt_state(interrupt_state),
         .interrupt(interrupt)
     );
 
-    assign interrupt_enable = 0;
-    assign interrupt_disable = 0;
     InterruptGeneration interrupt_generation(
         .clk(cp),
         .rst(rst),
@@ -145,14 +150,13 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
         .ebase(ebase),
         .hw(hardware_interrupt),
         .sw(software_interrupt),
-        .interrupt_en_in(interrupt_en_in),
-        .interrupt_en_out(interrupt_en_out),
+        .interrupt_state(interrupt_state),
+        .interrupt_en(interrupt_en),
         .interrupt_begin(interrupt_begin),
         .interrupt_finish(interrupt_finish),
+        .interrupt_finish_after(interrupt_finish_after),
         .interrupt(interrupt),
-        .exception_handle_addr(exception_handle_addr),
-        .interrupt_disable(interrupt_disable),
-        .interrupt_enable(interrupt_enable)
+        .exception_handle_addr(exception_handle_addr)
     );
 
     Pc reg_pc(
@@ -307,14 +311,12 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
 
     Input inputs(
         .clk(cp),
-        .btnl(btnl),
         .btnr(btnr),
         .btnc(btnc),
         .btnu(btnu),
         .btnd(btnd),
         .sw(sw),
         .go(go),
-        .rst(rst),
         .freq(freq),
         .pause_and_show(pause_and_show),
         .show_type(show_type),
