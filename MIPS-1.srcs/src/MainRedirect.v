@@ -177,7 +177,7 @@ module MainRedirect(
     IF_ID ifIdPiped(
         .clk(cp),
         .rst(rst|can_jump),
-        .stall(load_use),
+        .stall(load_use | pause),
         .pc_in(pc_if),
         .ir_in(ir_if),
         .pc_out(pc_id),
@@ -316,7 +316,7 @@ module ID_EX(
     ID_EX idExPiped(
         .clk(cp),
         .rst(rst | load_use),
-        .stall(1'b0),
+        .stall(pause),
         .RegWrite_in(RegWrite_id),
         .Jal_in(jal_id),
         .Lui_in(lui_id),
@@ -395,7 +395,7 @@ module ID_EX(
     EX_MEM exMemPiped(
         .clk(cp),
         .rst(rst),
-        .stall(1'b0),
+        .stall(pause),
         .RegWrite_in(RegWrite_ex),
         .Jal_in(jal_ex),
         .Lui_in(lui_ex),
@@ -450,7 +450,7 @@ module ID_EX(
     MEM_WB memWbPiped(
         .clk(cp),
         .rst(rst),
-        .stall(1'b0),
+        .stall(pause),
         .RegWrite_in(RegWrite_mem),
         .Jal_in(jal_mem),
         .Lui_in(lui_mem),
