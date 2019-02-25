@@ -36,6 +36,7 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
     wire        jr, jmp, jal;
     wire        lui, mflo;
     wire        hlen;
+    wire        eret, mfc0, mtc0;
 
     wire[1:0]   b_branch;
     wire        branch;
@@ -54,7 +55,7 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
     wire[1:0]   ram_mode;
 
     wire[`ADDR_WIDTH-1:0]  ins_addr;
-    wire[31:0] ins;
+    wire[31:0]  ins;
     wire        rom_sel;
 
     wire[31:0]  a0, v0;
@@ -66,6 +67,18 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
     wire[31:0]  jmp_num, branch_num, all_cyc;
     wire[31:0]  freq;
 
+    wire        interrupt_request, interrupt_begin, interrupt_finish;
+    wire        interrupt_en_in, interrupt_en_out, nmi_in, nmi_out;
+    wire        interrupt_enable, interrupt_disable, interrupt;
+    wire[31:0]ebase;
+    wire[7:0]   cause_ip_in, cause_ip_out, status_im;
+    wire            cp0_we;
+    wire[4:0]   cp0_ra, cp0_rw;
+    wire[31:0]  cp0_din, cp0_dout, epc;
+    wire[1:0]   software_interrupt;
+    wire[5:0]   hardware_interrupt;
+    wire[`ADDR_WIDTH-1:0]exception_handle_addr;
+
 `ifdef  DEBUG
     assign cp = clk;
 `else
@@ -74,12 +87,75 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
         .clk_n(cp),
         .freq(freq)
     );
-    assign go = btnr;
-    assign rst = btnl;
 `endif
 
+////////////////////////////////////////////////////////
+//    DEBUG 时可修改led绑定的信号          //
+/////////////////////////////////////////////////////////
+    assign led[0] = cp;
+    assign led[1] = interrupt_begin;
+    assign led[2] = interrupt_begin;
+    assign led[3] = interrupt_finish;
+    assign led[4] = interrupt_en_in;
+    assign led[5] = 0;
+    assign led[6] = 0;
+    assign led[7] = 0;
+    assign led[8] = 0;
+    assign led[9] = 0;
+    assign led[10] = 0;
+    assign led[11] = 0;
+    assign led[12] = 0;
+    assign led[13] = 0;
+    assign led[14] = 0;
+    assign led[15] = 0;
+    
+    
+
+    assign nmi_out = 0;
+    CP0 cp0(
+        .clk(cp),
+        .rst(rst),
+        .we(cp0_we),
+        .din(cp0_din),
+        .dout(cp0_dout),
+        .rw(cp0_rw),
+        .ra(cp0_ra),
+        .status_im(status_im),
+        .cause_ip_in(cause_ip_out),
+        .cause_ip_out(cause_ip_in),
+        .ebase(ebase),
+        .interrupt_en_in(interrupt_en_out),
+        .interrupt_en_out(interrupt_en_in),
+        .nmi_in(nmi_out),
+        .nmi_out(nmi_in),
+        .epc_in(npc),
+        .epc_out(epc),
+        .interrupt_begin(interrupt_begin)
+    );
+
+    assign interrupt_enable = 1;
+    assign interrupt_disable = 0;
+    InterruptGeneration interrupt_generation(
+        .clk(cp),
+        .rst(rst),
+        .cause_ip_in(cause_ip_in),
+        .cause_ip_out(cause_ip_out),
+        .status_im(status_im),
+        .ebase(ebase),
+        .hw(hardware_interrupt),
+        .sw(software_interrupt),
+        .interrupt_en_in(interrupt_en_in),
+        .interrupt_en_out(interrupt_en_out),
+        .interrupt_begin(interrupt_begin),
+        .interrupt_finish(interrupt_finish),
+        .interrupt(interrupt),
+        .exception_handle_addr(exception_handle_addr),
+        .interrupt_disable(interrupt_disable),
+        .interrupt_enable(interrupt_enable)
+    );
+
     Pc reg_pc(
-        .npc(npc),
+        .npc(interrupt_begin ? exception_handle_addr : npc),
         .rst(rst),
         .clk(cp),
         .pc_valid(~pause),
@@ -89,7 +165,7 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
     Register #(.EDGE(`NEGEDGE))reg_lo(
         .data_in(result),
         .data_out(lo_out),
-        .clk(clk),
+        .clk(cp),
         .rst(rst),
         .en((op == `ZERO_OP) && ((func == `DIVU_FUNC) || (func == `MULTU_FUNC)))
     );
@@ -104,7 +180,9 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
         .rs(npc_rs),
         .jr(jr),
         .jmp(jmp),
-        .npc(npc)
+        .npc(npc),
+        .epc(epc),
+        .interrupt_finish(interrupt_finish)
     );
 
     Controller controller(
@@ -129,7 +207,12 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
         .mflo(mflo),
         .hlen(hlen),
         .mode(ram_mode),
-        .b_branch(b_branch)
+        .b_branch(b_branch),
+        .rs(rs),
+        .mfc0(mfc0),
+        .mtc0(mtc0),
+        .eret(eret),
+        .cp0_we(cp0_we)
     );
 
     Extender extender(
@@ -172,7 +255,7 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
         .mode(ram_mode),
         .mem_signed_ext(mem_signed_ext),
         .we(MemWrite),
-        .clk(clk),
+        .clk(cp),
         .rst(rst),
         .dout(ram_dout)
     );
@@ -213,7 +296,6 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
 
     Led leds(
         .pause(pause),
-        .led(led),
         .led16_b(led16_b),
         .led16_g(led16_g),
         .led16_r(led16_r),
@@ -223,6 +305,7 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
     );
 
     Input inputs(
+        .clk(cp),
         .btnl(btnl),
         .btnr(btnr),
         .btnc(btnc),
@@ -233,7 +316,8 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
         .rst(rst),
         .freq(freq),
         .pause_and_show(pause_and_show),
-        .show_type(show_type)
+        .show_type(show_type),
+        .hardware_interrupt(hardware_interrupt)
     );
 
     Counter all_cyc_counter(
@@ -292,10 +376,17 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
     assign regfile_din = mflo ? lo_out : 
                          (lui ? ({imm,16'b0}) :
                          (jal ? (pc + 32'd4) :
-                         (MemToReg ? ram_dout : result)));
+                         (MemToReg ? ram_dout :
+                         (mfc0 ? cp0_dout : result))));
 
     assign show_data = (show_type == `SHOW_ALL_CYC) ? all_cyc :
                                        ( (show_type == `SHOW_BRANCH_NUM) ? branch_num : 
                                        ( (show_type == `SHOW_JMP_NUM) ? jmp_num : all_cyc) );
+
+    assign interrupt_finish = eret;
+    assign cp0_rw = rd;
+    assign cp0_ra = rd;
+    assign cp0_din = R2;
+    assign software_interrupt = 0;
 
 endmodule

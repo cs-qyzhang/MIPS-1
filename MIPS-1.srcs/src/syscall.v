@@ -22,7 +22,7 @@ module Syscall(clk,rst,syscall,go,a0,v0,pause,print,led_data,print_mode,pause_an
     input           clk, rst, syscall, go, pause_and_show;
     input[31:0]     a0, v0, show_data;
     output reg[31:0]led_data = 0;
-    output reg      pause, print = 0;
+    output reg      pause = 0, print = 0;
     output reg[3:0] print_mode = `PRINT_HEX;
 
     reg can_go = 0;
