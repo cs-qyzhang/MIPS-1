@@ -12,13 +12,8 @@ module Divider(clk, clk_n);
     output clk_n;                       
     
     parameter N = 50000;           
-    reg [31:0] cnt;                    
-    reg clk_n;
-
-    initial
-        begin
-            cnt = 0;
-        end
+    reg [31:0] cnt = 0;                    
+    reg clk_n = 0;
 
     always
         @(posedge clk) begin
@@ -26,22 +21,19 @@ module Divider(clk, clk_n);
             if (cnt == N)
                 begin
                     cnt = 0;
-                    clk_n = ~clk_n;
+                    clk_n <= ~clk_n;
                 end
+            else
+                clk_n <= clk_n;
         end
 endmodule
 
 module DividerFreq(clk,freq,clk_n);
     input       clk;
     input[31:0] freq;
-    output reg  clk_n;
+    output reg  clk_n = 0;
 
-    reg [31:0]  cnt;
-
-    initial
-        begin
-            cnt = 0;
-        end
+    reg [31:0]  cnt = 0;
 
     always
         @(posedge clk) begin
@@ -49,8 +41,10 @@ module DividerFreq(clk,freq,clk_n);
             if (cnt >= (100_000_000 / freq))
                 begin
                     cnt = 0;
-                    clk_n = ~clk_n;
+                    clk_n <= ~clk_n;
                 end
+            else
+                clk_n <= clk_n;
         end
 
 endmodule

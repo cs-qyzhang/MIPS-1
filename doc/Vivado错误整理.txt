@@ -1,0 +1,2 @@
+- Inferred Latches: often the result of HDL coding mistakes, such as incomplete 
+  if or case statements.

@@ -15,12 +15,7 @@
 module Pc(npc,rst,clk,pc_valid,pc);
     input[31:0]     npc;
     input           rst, clk, pc_valid;
-    output reg[31:0]pc;
-
-    initial
-        begin
-            pc = 0;
-        end
+    output reg[31:0]pc = 0;
 
     always
         @(posedge clk)

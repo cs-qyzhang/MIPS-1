@@ -3,16 +3,20 @@
  * 常数定义
  */
 `timescale  1 ns / 1 ps
+//`define         DEBUG
+`define         TRUE        'b1
+`define         FALSE       'b0
 
-`define         TRUE        1
-`define         FALSE       0
+// EDGE
+`define         POSEDGE     1'b1
+`define         NEGEDGE     1'b0
 
 // SYSCALL
-`define         SYS_PDEC    1 
-`define         SYS_EXIT    10
-`define         SYS_PHEX    34
-`define         SYS_PBIN    35
-`define         SYS_PAUSE   50
+`define         SYS_PDEC    32'd1 
+`define         SYS_EXIT    32'd10
+`define         SYS_PHEX    32'd34
+`define         SYS_PBIN    32'd35
+`define         SYS_PAUSE   32'd50
 
 // ALU OP
 `define         ALU_SLL     4'b0000     // 逻辑左移
@@ -43,30 +47,33 @@
 
 // op_code
 `define         ZERO_OP     6'd0        //R型指令op_code
+`define         BLTZ_OP     6'd1
+`define         BGEZ_OP     6'd1
 `define         J_OP        6'd2        
 `define         JAL_OP      6'd3        
 `define         BEQ_OP      6'd4        
 `define         BNE_OP      6'd5
+`define         BLEZ_OP     6'd6
+`define         BGTZ_OP     6'd7
 `define         ADDI_OP     6'd8
-`define         ANDI_OP     6'd12
 `define         ADDIU_OP    6'd9
 `define         SLTI_OP     6'd10
+`define         SLTIU_OP    6'd11
+`define         ANDI_OP     6'd12
 `define         ORI_OP      6'd13
-`define         LW_OP       6'd35
-`define         SW_OP       6'd43
 `define         XORI_OP     6'd14
 `define         LUI_OP      6'd15
-`define         SLTIU_OP    6'd11
+`define         MFC0_OP     6'd16
+`define         MTC0_OP     6'd16
+`define         ERET_OP     6'd16
 `define         LB_OP       6'd32
-`define         LBU_OP      6'd36
 `define         LH_OP       6'd33
+`define         LW_OP       6'd35
+`define         LBU_OP      6'd36
 `define         LHU_OP      6'd37
 `define         SB_OP       6'd40
 `define         SH_OP       6'd41
-`define         BLEZ_OP     6'd6
-`define         BGTZ_OP     6'd7
-`define         BLTZ_OP     6'd1
-`define         BGEZ_OP     6'd1
+`define         SW_OP       6'd43
 
 // func
 `define         SLL_FUNC    6'd0
@@ -92,7 +99,7 @@
 `define         MFLO_FUNC   6'd18
 
 // Adder width
-`define         ADDR_WIDTH  20
+`define         ADDR_WIDTH  15
 
 // FREQ in HZ
 `define         FREQ_ULTRA_FAST 4000
@@ -106,3 +113,32 @@
 `define         SHOW_ALL_CYC    4'b0000
 `define         SHOW_BRANCH_NUM 4'b0001
 `define         SHOW_JMP_NUM    4'b0010
+
+// CP0
+`define         CP0_STATUS      5'd12
+`define         CP0_CAUSE       5'd13
+`define         CP0_EPC         5'd14
+`define         CP0_EBASE       5'd15
+
+`define         STATUS_IE       5'd0
+`define         STATUS_IM0      5'd8
+`define         STATUS_IM1      5'd9
+`define         STATUS_IM2      5'd10
+`define         STATUS_IM3      5'd11
+`define         STATUS_IM4      5'd12
+`define         STATUS_IM5      5'd13
+`define         STATUS_IM6      5'd14
+`define         STATUS_IM7      5'd15
+`define         STATUS_NMI      5'd19
+
+`define         CAUSE_IP0       5'd8
+`define         CAUSE_IP1       5'd9
+`define         CAUSE_IP2       5'd10
+`define         CAUSE_IP3       5'd11
+`define         CAUSE_IP4       5'd12
+`define         CAUSE_IP5       5'd13
+`define         CAUSE_IP6       5'd14
+`define         CAUSE_IP7       5'd15
+`define         CAUSE_EXC_CODE  6:2
+
+`define         EXCEPTION_HANDLE_ADDR   'h88c

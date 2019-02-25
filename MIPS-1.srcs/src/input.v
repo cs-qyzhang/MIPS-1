@@ -18,24 +18,23 @@
  *
  */
 module Input(btnl,btnr,btnc,btnu,btnd,sw,
-             go,rst,freq,pause_and_show,show_type);
+             go,rst,freq,pause_and_show,show_type,
+             hardware_interrupt,clk);
 
-    input           btnl, btnr, btnc, btnu, btnd;
+    input           btnl, btnr, btnc, btnu, btnd, clk;
     input[15:0]     sw;
 
     output          pause_and_show,go,rst;
     output[3:0]     show_type;
-    output reg[31:0]freq;
+    output reg[31:0]freq = `FREQ_DEF;
+    output reg[5:0] hardware_interrupt = 0;
+    
+    reg[5:0]        hardware_interrupt_reg = 0;
 
     assign go = btnr;
     assign rst = btnl;
     assign pause_and_show = |sw[15:13];
     assign show_type = sw[15] ? `SHOW_ALL_CYC : (sw[14] ? `SHOW_BRANCH_NUM : (sw[13] ? `SHOW_JMP_NUM : `SHOW_ALL_CYC));
-
-    initial
-        begin
-            freq <= `FREQ_DEF;
-        end
 
     always
         @(sw[4:0])
@@ -52,6 +51,39 @@ module Input(btnl,btnr,btnc,btnu,btnd,sw,
                 freq <= `FREQ_ULTRA_SLOW;
             else
                 freq <= `FREQ_DEF;
+        end
+        
+    always @(posedge clk)
+        begin
+            if (btnc)
+                hardware_interrupt_reg[0] = 1;
+            else if (hardware_interrupt_reg[0])
+                begin
+                    hardware_interrupt[0]     = 1'b1;
+                    hardware_interrupt_reg[0] = 0;
+                end
+            else
+                hardware_interrupt[0] = 0;
+
+            if (btnu)
+                hardware_interrupt_reg[1] = 1;
+            else if (hardware_interrupt_reg[1])
+                begin
+                    hardware_interrupt[1]     = 1'b1;
+                    hardware_interrupt_reg[1] = 0;
+                end
+            else
+                hardware_interrupt[1] = 0;
+            
+            if (btnd)
+                    hardware_interrupt_reg[2] = 1;
+                else if (hardware_interrupt_reg[2])
+                    begin
+                        hardware_interrupt[2]     = 1'b1;
+                        hardware_interrupt_reg[2] = 0;
+                    end
+                else
+                    hardware_interrupt[2] = 0;
         end
 
 endmodule

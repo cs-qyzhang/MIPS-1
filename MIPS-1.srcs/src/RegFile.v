@@ -31,7 +31,9 @@ module RegFile(clk,ra,rb,rw,we,din,R1,R2);
     initial
         begin
             for (i = 0; i < 32; i = i + 1)
-                GPR[i] = 0;
+                begin
+                    GPR[i] = 'b0;
+                end
         end
 
     always

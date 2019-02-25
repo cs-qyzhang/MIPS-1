@@ -19,24 +19,21 @@
  *      npc: next pc
  *
  */
-module Npc(pc,clk,rst,imm_ext,imm26,branch,rs,jr,jmp,npc);
+module Npc(pc,clk,rst,imm_ext,imm26,branch,rs,jr,jmp,npc,epc,interrupt_finish);
     input[31:0]     pc, rs;
-    input           clk, rst, branch, jr, jmp;
+    input           clk, rst, branch, jr, jmp, interrupt_finish;
     input[25:0]     imm26;
-    input[31:0]     imm_ext;
+    input[31:0]     imm_ext, epc;
 
-    output reg[31:0]npc;
-
-    initial
-        begin
-            npc <= 0;
-        end
+    output reg[31:0]npc = 0;
 
     always
         @(negedge clk)
         begin
             if (rst)
                 npc <= 0;
+            else if (interrupt_finish)
+                npc <= epc;
             else if (branch)
                 npc <= (imm_ext << 2) + pc + 4;
             else if (jr)

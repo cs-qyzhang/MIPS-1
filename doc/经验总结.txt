@@ -1,0 +1,7 @@
+- 在写 ? : 语句的时候要注意将所有情况罗列
+- initial 语句不会被综合，若要对变量赋初值要在声明的时候
+- Do not mix blocking and non-blocking assignments to the same signal.
+- Do not mix blocking and non-blocking assignments for different bits of the same signal.
+- Unsized integers in case item expressions can cause unpredictable results.
+- Unsigned integers in Verilog concatenations can cause unpredictable results.
+- Vivado synthesis does not support assign and deassign statements.

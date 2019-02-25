@@ -1,28 +1,44 @@
 `timescale 1ns / 1ps
 
 /*
-·ÖÖ§Ìø×ªÐÅºÅ
+ï¿½ï¿½Ö§ï¿½ï¿½×ªï¿½Åºï¿½
 input:
-    R ALU±È½ÏÔËËã½á¹û£¬È¡µÚ0Î»
-    Equal ALU±È½ÏÐÅºÅ
+    R ALUï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½0Î»
+    Equal ALUï¿½È½ï¿½ï¿½Åºï¿½
     beq
     bne
-    B 4ÌõBÀàÖ¸Áî£¬Á½Î»
-    rsn 4Î»£¬ÓÃÀ´Çø·ÖBLTZºÍBGEZÖ¸Áî
+    B 4ï¿½ï¿½Bï¿½ï¿½Ö¸ï¿½î£¬ï¿½ï¿½Î»
+    rsn 4Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½BLTZï¿½ï¿½BGEZÖ¸ï¿½ï¿½
 output:
-    Branch ·ÖÖ§Ìø×ªÐÅºÅ£¬Ò»Î»    
+    Branch ï¿½ï¿½Ö§ï¿½ï¿½×ªï¿½ÅºÅ£ï¿½Ò»Î»    
 */
 module Branch(R,Equal,beq,bne,B,Branch,rt);
     input R,Equal,beq,bne;
     input [1:0]B;
     input [4:0]rt;
-    output Branch;
+    output reg Branch;
     
-    assign Branch = beq ? (Equal ? 1 : 0) :
-                    bne ? (Equal ? 0 : 1) :
-                    (B == 2'b01) ? (R||Equal ? 1 : 0) :
-                    (B == 2'b10) ? (R||Equal ? 0 : 1) :
-                    (B == 2'b11) ? (rt == 5'b00000 ? (R ? 1 : 0) : (R ? 0 : 1)) :
-                    (0);
-    
+    always @(*)
+        begin
+            if (beq)
+                Branch = Equal ? 1 : 0;
+            else if (bne)
+                Branch = Equal ? 0 : 1;
+            else if (B == 2'b00)
+                Branch = 0;
+            else if (B == 2'b01)
+                Branch = (R || Equal) ? 1 : 0;
+            else if (B == 2'b10)
+                Branch = (R || Equal) ? 0 : 1;
+            else if (B == 2'b11)
+                begin
+                    if (rt == 5'b0)
+                        Branch = R ? 1 : 0;
+                    else
+                        Branch = R ? 0 : 1;
+                end
+            else
+                Branch = 0;
+        end
+
 endmodule

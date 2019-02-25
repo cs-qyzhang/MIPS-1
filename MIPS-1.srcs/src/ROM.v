@@ -13,17 +13,24 @@ module ROM(addr,sel,data);
 
     parameter ADDR_LEN=32;
     parameter DATA_LEN=32;
-    parameter DATA_NUM=2048;
+    parameter DATA_NUM=1024;
     
     input [ADDR_LEN-1:0]addr;
     input sel;
     output  [DATA_LEN-1:0]data;
-    //integer i;
-    reg[DATA_LEN-1:0]my_rom[DATA_NUM-1:0];
+    
+    (* rom_style = "block" *)reg[DATA_LEN-1:0]my_rom[DATA_NUM-1:0];
     
     initial 
         begin
-            $readmemh("/media/psf/Home/Desktop/ROM.txt",my_rom); 
+`ifdef QY_ZHANG
+            $readmemh("/home/qyzhang/ROM_GO_EXCEPTION_MULTI.txt",my_rom); 
+`else
+            //$readmemh("/media/psf/Home/Desktop/ROM.txt",my_rom);
+            $readmemh("/home/longj/MIPS-1/汇编工具及测试用例4.31/rom.txt", my_rom); 
+`endif
         end
+
         assign data=sel?my_rom[addr]:'bz;
+
 endmodule
