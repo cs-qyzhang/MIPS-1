@@ -29,7 +29,7 @@ module Input(btnl,btnr,btnc,btnu,btnd,sw,
     output reg[31:0]freq = `FREQ_DEF;
     output reg[5:0] hardware_interrupt = 0;
     
-    reg         hardware_interrupt_reg = 0;
+    reg[5:0]        hardware_interrupt_reg = 0;
 
     assign go = btnr;
     assign rst = btnl;
@@ -56,14 +56,34 @@ module Input(btnl,btnr,btnc,btnu,btnd,sw,
     always @(posedge clk)
         begin
             if (btnc)
-                hardware_interrupt_reg = 1;
-            else if (hardware_interrupt_reg)
+                hardware_interrupt_reg[0] = 1;
+            else if (hardware_interrupt_reg[0])
                 begin
-                    hardware_interrupt = 6'b01;
-                    hardware_interrupt_reg = 0;
+                    hardware_interrupt[0]     = 1'b1;
+                    hardware_interrupt_reg[0] = 0;
                 end
             else
-                hardware_interrupt = 6'b0;
+                hardware_interrupt[0] = 0;
+
+            if (btnu)
+                hardware_interrupt_reg[1] = 1;
+            else if (hardware_interrupt_reg[1])
+                begin
+                    hardware_interrupt[1]     = 1'b1;
+                    hardware_interrupt_reg[1] = 0;
+                end
+            else
+                hardware_interrupt[1] = 0;
+            
+            if (btnd)
+                    hardware_interrupt_reg[2] = 1;
+                else if (hardware_interrupt_reg[2])
+                    begin
+                        hardware_interrupt[2]     = 1'b1;
+                        hardware_interrupt_reg[2] = 0;
+                    end
+                else
+                    hardware_interrupt[2] = 0;
         end
 
 endmodule

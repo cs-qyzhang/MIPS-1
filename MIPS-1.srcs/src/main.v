@@ -92,16 +92,16 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
 ////////////////////////////////////////////////////////
 //    DEBUG 时可修改led绑定的信号          //
 /////////////////////////////////////////////////////////
-    assign led[0] = cp;
-    assign led[1] = interrupt_begin;
-    assign led[2] = interrupt_begin;
-    assign led[3] = interrupt_finish;
-    assign led[4] = interrupt_en_in;
-    assign led[5] = 0;
-    assign led[6] = 0;
-    assign led[7] = 0;
-    assign led[8] = 0;
-    assign led[9] = 0;
+    assign led[0]  = cp;
+    assign led[1]  = interrupt;
+    assign led[2]  = interrupt_begin;
+    assign led[3]  = interrupt_finish;
+    assign led[4]  = interrupt_en_in;
+    assign led[5]  = 0;
+    assign led[6]  = 0;
+    assign led[7]  = 0;
+    assign led[8]  = 0;
+    assign led[9]  = 0;
     assign led[10] = 0;
     assign led[11] = 0;
     assign led[12] = 0;
@@ -130,10 +130,11 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
         .nmi_out(nmi_in),
         .epc_in(npc),
         .epc_out(epc),
-        .interrupt_begin(interrupt_begin)
+        .interrupt_begin(interrupt_begin),
+        .interrupt(interrupt)
     );
 
-    assign interrupt_enable = 1;
+    assign interrupt_enable = 0;
     assign interrupt_disable = 0;
     InterruptGeneration interrupt_generation(
         .clk(cp),
@@ -379,7 +380,7 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
                          (MemToReg ? ram_dout :
                          (mfc0 ? cp0_dout : result))));
 
-    assign show_data = (show_type == `SHOW_ALL_CYC) ? all_cyc :
+    assign show_data = (show_type == `SHOW_ALL_CYC) ? {24'b0,status_im} :
                                        ( (show_type == `SHOW_BRANCH_NUM) ? branch_num : 
                                        ( (show_type == `SHOW_JMP_NUM) ? jmp_num : all_cyc) );
 

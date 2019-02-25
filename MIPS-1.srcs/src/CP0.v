@@ -4,9 +4,9 @@
 module CP0(clk,rst,we,din,dout,rw,ra,
            status_im,cause_ip_in,cause_ip_out,ebase,
            interrupt_en_in,interrupt_en_out,nmi_in,nmi_out,
-           epc_in,epc_out,interrupt_begin);
+           epc_in,epc_out,interrupt_begin,interrupt);
 
-    input       clk, rst, we, interrupt_en_in, interrupt_begin;
+    input       clk, rst, we, interrupt_en_in, interrupt_begin, interrupt;
     input[4:0]  ra, rw;
     input[31:0] din;
     input       nmi_in;
@@ -46,7 +46,8 @@ module CP0(clk,rst,we,din,dout,rw,ra,
             CP0_reg[`CP0_CAUSE][`CAUSE_IP7:`CAUSE_IP0]    = cause_ip_in[7:0];
             CP0_reg[`CP0_STATUS][`STATUS_NMI]             = nmi_in;
             
-            CP0_reg[`CP0_STATUS][`STATUS_IM7:`STATUS_IM0] = 8'b11111111;
+            if (!interrupt)
+                CP0_reg[`CP0_STATUS][`STATUS_IM7:`STATUS_IM0] = 8'b11111111;
 
             if (interrupt_begin)
                 CP0_reg[`CP0_EPC] = epc_in;

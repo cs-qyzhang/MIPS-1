@@ -24,7 +24,7 @@ module ROM(addr,sel,data);
     initial 
         begin
 `ifdef QY_ZHANG
-            $readmemh("/home/qyzhang/ROM_GO_EXCEPTION.txt",my_rom); 
+            $readmemh("/home/qyzhang/ROM_GO_EXCEPTION_MULTI.txt",my_rom); 
 `else
             //$readmemh("/media/psf/Home/Desktop/ROM.txt",my_rom);
             $readmemh("//media/psf/Home/Desktop/ROM1.txt", my_rom); 
