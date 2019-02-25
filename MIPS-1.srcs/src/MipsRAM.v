@@ -12,7 +12,7 @@
  */
 module MipsRAM(addr, din, mode, we, clk, rst, dout, mem_signed_ext);
     parameter   ADDR_WIDTH = `ADDR_WIDTH;
-    parameter   DATA_NUM = 128;
+    parameter   DATA_NUM = 256;
 
     input[ADDR_WIDTH-1:0]addr;
     input[31:0]     din;
@@ -33,7 +33,7 @@ module MipsRAM(addr, din, mode, we, clk, rst, dout, mem_signed_ext);
 
     initial
         begin
-            for (i = 0; i < 32; i = i + 1)
+            for (i = 0; i < DATA_NUM; i = i + 1)
                 begin
                     ram[i] = 'b0;
                 end

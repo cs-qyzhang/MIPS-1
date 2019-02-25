@@ -99,7 +99,7 @@
 `define         MFLO_FUNC   6'd18
 
 // Adder width
-`define         ADDR_WIDTH  12
+`define         ADDR_WIDTH  15
 
 // FREQ in HZ
 `define         FREQ_ULTRA_FAST 4000
@@ -141,4 +141,4 @@
 `define         CAUSE_IP7       5'd15
 `define         CAUSE_EXC_CODE  6:2
 
-`define         EXCEPTION_HANDLE_ADDR   'b0
+`define         EXCEPTION_HANDLE_ADDR   'h88c

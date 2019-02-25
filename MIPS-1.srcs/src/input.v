@@ -19,21 +19,22 @@
  */
 module Input(btnl,btnr,btnc,btnu,btnd,sw,
              go,rst,freq,pause_and_show,show_type,
-             hardware_interrupt);
+             hardware_interrupt,clk);
 
-    input           btnl, btnr, btnc, btnu, btnd;
+    input           btnl, btnr, btnc, btnu, btnd, clk;
     input[15:0]     sw;
 
     output          pause_and_show,go,rst;
     output[3:0]     show_type;
     output reg[31:0]freq = `FREQ_DEF;
-    output[5:0] hardware_interrupt;
+    output reg[5:0] hardware_interrupt = 0;
+    
+    reg         hardware_interrupt_reg = 0;
 
     assign go = btnr;
     assign rst = btnl;
     assign pause_and_show = |sw[15:13];
     assign show_type = sw[15] ? `SHOW_ALL_CYC : (sw[14] ? `SHOW_BRANCH_NUM : (sw[13] ? `SHOW_JMP_NUM : `SHOW_ALL_CYC));
-    assign hardware_interrupt = btnc ? 'b1 : 'b0;
 
     always
         @(sw[4:0])
@@ -50,6 +51,19 @@ module Input(btnl,btnr,btnc,btnu,btnd,sw,
                 freq <= `FREQ_ULTRA_SLOW;
             else
                 freq <= `FREQ_DEF;
+        end
+        
+    always @(posedge clk)
+        begin
+            if (btnc)
+                hardware_interrupt_reg = 1;
+            else if (hardware_interrupt_reg)
+                begin
+                    hardware_interrupt = 6'b01;
+                    hardware_interrupt_reg = 0;
+                end
+            else
+                hardware_interrupt = 6'b0;
         end
 
 endmodule

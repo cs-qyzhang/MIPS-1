@@ -28,6 +28,8 @@ module CP0(clk,rst,we,din,dout,rw,ra,
     assign  interrupt_en_out  = CP0_reg[`CP0_STATUS][`STATUS_IE];
     assign  epc_out           = CP0_reg[`CP0_EPC];
     assign  dout              = CP0_reg[ra];
+    //assign ebase            = CP0_reg[`CP0_EBASE];
+    assign ebase            = `EXCEPTION_HANDLE_ADDR;
 
     initial
         begin
@@ -35,7 +37,7 @@ module CP0(clk,rst,we,din,dout,rw,ra,
                 CP0_reg[i] = 32'b0;
             CP0_reg[`CP0_EBASE] = `EXCEPTION_HANDLE_ADDR;
             CP0_reg[`CP0_STATUS][`STATUS_IE] = 1;
-            CP0_reg[`CP0_STATUS][`STATUS_IM7:`STATUS_IM0] = 8'b1;
+            CP0_reg[`CP0_STATUS][`STATUS_IM7:`STATUS_IM0] = 8'b11111111;
         end
 
     always @(negedge clk)
@@ -43,6 +45,8 @@ module CP0(clk,rst,we,din,dout,rw,ra,
             CP0_reg[`CP0_STATUS][`STATUS_IE]              = interrupt_en_in;
             CP0_reg[`CP0_CAUSE][`CAUSE_IP7:`CAUSE_IP0]    = cause_ip_in[7:0];
             CP0_reg[`CP0_STATUS][`STATUS_NMI]             = nmi_in;
+            
+            CP0_reg[`CP0_STATUS][`STATUS_IM7:`STATUS_IM0] = 8'b11111111;
 
             if (interrupt_begin)
                 CP0_reg[`CP0_EPC] = epc_in;

@@ -74,7 +74,7 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
     wire[7:0]   cause_ip_in, cause_ip_out, status_im;
     wire            cp0_we;
     wire[4:0]   cp0_ra, cp0_rw;
-    wire[31:0]  cp0_din, cp0_dout, epc_in, epc_out;
+    wire[31:0]  cp0_din, cp0_dout, epc;
     wire[1:0]   software_interrupt;
     wire[5:0]   hardware_interrupt;
     wire[`ADDR_WIDTH-1:0]exception_handle_addr;
@@ -87,10 +87,31 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
         .clk_n(cp),
         .freq(freq)
     );
-    assign go = btnr;
-    assign rst = btnl;
 `endif
 
+////////////////////////////////////////////////////////
+//    DEBUG 时可修改led绑定的信号          //
+/////////////////////////////////////////////////////////
+    assign led[0] = cp;
+    assign led[1] = interrupt_begin;
+    assign led[2] = interrupt_begin;
+    assign led[3] = interrupt_finish;
+    assign led[4] = interrupt_en_in;
+    assign led[5] = 0;
+    assign led[6] = 0;
+    assign led[7] = 0;
+    assign led[8] = 0;
+    assign led[9] = 0;
+    assign led[10] = 0;
+    assign led[11] = 0;
+    assign led[12] = 0;
+    assign led[13] = 0;
+    assign led[14] = 0;
+    assign led[15] = 0;
+    
+    
+
+    assign nmi_out = 0;
     CP0 cp0(
         .clk(cp),
         .rst(rst),
@@ -107,12 +128,15 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
         .interrupt_en_out(interrupt_en_in),
         .nmi_in(nmi_out),
         .nmi_out(nmi_in),
-        .epc_in(epc_in),
-        .epc_out(epc_out)
+        .epc_in(npc),
+        .epc_out(epc),
+        .interrupt_begin(interrupt_begin)
     );
 
+    assign interrupt_enable = 1;
+    assign interrupt_disable = 0;
     InterruptGeneration interrupt_generation(
-        .clk(clk),
+        .clk(cp),
         .rst(rst),
         .cause_ip_in(cause_ip_in),
         .cause_ip_out(cause_ip_out),
@@ -123,13 +147,11 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
         .interrupt_en_in(interrupt_en_in),
         .interrupt_en_out(interrupt_en_out),
         .interrupt_begin(interrupt_begin),
-        .interrupt_finish(interrupt_en_out),
+        .interrupt_finish(interrupt_finish),
         .interrupt(interrupt),
         .exception_handle_addr(exception_handle_addr),
-        .epc(epc_in),
         .interrupt_disable(interrupt_disable),
-        .interrupt_enable(interrupt_enable),
-        .npc(npc)
+        .interrupt_enable(interrupt_enable)
     );
 
     Pc reg_pc(
@@ -143,7 +165,7 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
     Register #(.EDGE(`NEGEDGE))reg_lo(
         .data_in(result),
         .data_out(lo_out),
-        .clk(clk),
+        .clk(cp),
         .rst(rst),
         .en((op == `ZERO_OP) && ((func == `DIVU_FUNC) || (func == `MULTU_FUNC)))
     );
@@ -159,7 +181,7 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
         .jr(jr),
         .jmp(jmp),
         .npc(npc),
-        .epc(epc_out),
+        .epc(epc),
         .interrupt_finish(interrupt_finish)
     );
 
@@ -233,7 +255,7 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
         .mode(ram_mode),
         .mem_signed_ext(mem_signed_ext),
         .we(MemWrite),
-        .clk(clk),
+        .clk(cp),
         .rst(rst),
         .dout(ram_dout)
     );
@@ -274,7 +296,6 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
 
     Led leds(
         .pause(pause),
-        .led(led),
         .led16_b(led16_b),
         .led16_g(led16_g),
         .led16_r(led16_r),
@@ -284,6 +305,7 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
     );
 
     Input inputs(
+        .clk(cp),
         .btnl(btnl),
         .btnr(btnr),
         .btnc(btnc),

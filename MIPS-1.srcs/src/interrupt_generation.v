@@ -13,19 +13,18 @@
 module  InterruptGeneration(clk,rst,cause_ip_in,status_im,ebase,hw,sw,
                             interrupt_en_in,interrupt_finish,
                             interrupt,cause_ip_out,interrupt_en_out,
-                            exception_handle_addr,epc,interrupt_disable,
-                            interrupt_enable,npc,interrupt_begin);
+                            exception_handle_addr,interrupt_disable,
+                            interrupt_enable,interrupt_begin);
 
     parameter   ADDR_WIDTH = `ADDR_WIDTH;
 
     input                   clk, rst, interrupt_finish;
     input[5:0]              hw;
     input[1:0]              sw;
-    input[31:0]             ebase, npc;
+    input[31:0]             ebase;
     input[7:0]              status_im, cause_ip_in;
     input                   interrupt_disable, interrupt_enable, interrupt_en_in;
-    output reg[31:0]        epc;
-    output reg[7:0]         cause_ip_out;
+    output reg[7:0]         cause_ip_out = 0;
     output reg              interrupt               = 0;
     output reg              interrupt_en_out        = 1;
     output reg              interrupt_begin         = 0;
@@ -37,14 +36,14 @@ module  InterruptGeneration(clk,rst,cause_ip_in,status_im,ebase,hw,sw,
         begin
             interrupt_begin = 0;
 
-            cause_ip_out[7] = cause_ip_in[7] ? cause_ip_in[7] : hw[5];
-            cause_ip_out[6] = cause_ip_in[6] ? cause_ip_in[6] : hw[4];
-            cause_ip_out[5] = cause_ip_in[5] ? cause_ip_in[5] : hw[3];
-            cause_ip_out[4] = cause_ip_in[4] ? cause_ip_in[4] : hw[2];
-            cause_ip_out[3] = cause_ip_in[3] ? cause_ip_in[3] : hw[1];
-            cause_ip_out[2] = cause_ip_in[2] ? cause_ip_in[2] : hw[0];
-            cause_ip_out[1] = cause_ip_in[1] ? cause_ip_in[1] : sw[1];
-            cause_ip_out[0] = cause_ip_in[0] ? cause_ip_in[0] : sw[0];
+            cause_ip_out[7] = (interrupt & (interrupt_source ==7)) ? 1 : hw[5];
+            cause_ip_out[6] = (interrupt & (interrupt_source == 6)) ? 1 : hw[4];
+            cause_ip_out[5] = (interrupt & (interrupt_source == 5)) ? 1 : hw[3];
+            cause_ip_out[4] = (interrupt & (interrupt_source == 4)) ? 1 : hw[2];
+            cause_ip_out[3] = (interrupt & (interrupt_source == 3)) ? 1 : hw[1];
+            cause_ip_out[2] = (interrupt & (interrupt_source == 2)) ? 1 : hw[0];
+            cause_ip_out[1] = (interrupt & (interrupt_source == 1)) ? 1 : sw[1];
+            cause_ip_out[0] = (interrupt & (interrupt_source == 0)) ? 1 : sw[0];
 
             if (interrupt_finish)
                 begin
@@ -73,87 +72,79 @@ module  InterruptGeneration(clk,rst,cause_ip_in,status_im,ebase,hw,sw,
                 end
             else if (interrupt_en_out)
                 begin
-                    if (cause_ip_out[7] && status_im[7])
+                    if (cause_ip_out[7] && status_im[7] && !interrupt)
                         begin
                             interrupt             = 1;
                             exception_handle_addr = ebase;
                             interrupt_source      = 7;
                             interrupt_en_out      = 0;
-                            epc                   = npc;
                             interrupt_begin       = 1;
                         end
-                    else if (cause_ip_out[6] && status_im[6])
+                    else if (cause_ip_out[6] && status_im[6] && !interrupt)
                         begin
                             interrupt             = 1;
                             exception_handle_addr = ebase;
                             interrupt_source      = 6;
                             interrupt_en_out      = 0;
-                            epc                   = npc;
                             interrupt_begin       = 1;
                         end
-                    else if (cause_ip_out[5] && status_im[5])
+                    else if (cause_ip_out[5] && status_im[5] && !interrupt)
                         begin
                             interrupt             = 1;
                             exception_handle_addr = ebase;
                             interrupt_source      = 5;
                             interrupt_en_out      = 0;
-                            epc                   = npc;
                             interrupt_begin       = 1;
                         end
-                    else if (cause_ip_out[4] && status_im[4])
+                    else if (cause_ip_out[4] && status_im[4] && !interrupt)
                         begin
                             interrupt             = 1;
                             exception_handle_addr = ebase;
                             interrupt_source      = 4;
                             interrupt_en_out      = 0;
-                            epc                   = npc;
                             interrupt_begin       = 1;
                         end
-                    else if (cause_ip_out[3] && status_im[3])
+                    else if (cause_ip_out[3] && status_im[3] && !interrupt)
                         begin
                             interrupt             = 1;
                             exception_handle_addr = ebase;
                             interrupt_source      = 3;
                             interrupt_en_out      = 0;
-                            epc                   = npc;
                             interrupt_begin       = 1;
                         end
-                    else if (cause_ip_out[2] && status_im[2])
+                    else if (cause_ip_out[2] && !interrupt)
                         begin
                             interrupt             = 1;
                             exception_handle_addr = ebase;
                             interrupt_source      = 2;
-                            interrupt_en_out      = 0;
-                            epc                   = npc;
+                            //interrupt_en_out      = 0;
                             interrupt_begin       = 1;
                         end
-                    else if (cause_ip_out[1] && status_im[1])
+                    else if (cause_ip_out[1] && status_im[1] && !interrupt)
                         begin
                             interrupt             = 1;
                             exception_handle_addr = ebase;
                             interrupt_source      = 1;
                             interrupt_en_out      = 0;
-                            epc                   = npc;
                             interrupt_begin       = 1;
                         end
-                    else if (cause_ip_out[0] && status_im[0])
+                    else if (cause_ip_out[0] && !interrupt)
                         begin
                             interrupt             = 1;
                             exception_handle_addr = ebase;
                             interrupt_source      = 0;
                             interrupt_en_out      = 0;
-                            epc                   = npc;
                             interrupt_begin       = 1;
                         end
                     else
                         begin
-                            interrupt             = 0;
+                            interrupt             = interrupt;
                             exception_handle_addr = exception_handle_addr;
                         end
                 end
             else
                 begin
-                    interrupt             = 0;
+                    interrupt             = interrupt;
                     exception_handle_addr = exception_handle_addr;
                 end
         end

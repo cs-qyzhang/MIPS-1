@@ -3,7 +3,7 @@
 
 
 module main_test();
-    reg         clk, rst, go;
+    reg         clk, rst, go, btnc;
     wire[7:0]   an, seg;
     wire[15:0] led;
     reg[15:0]   sw;
@@ -15,7 +15,7 @@ module main_test();
         .seg(seg),
         .btnl(rst),
         .btnr(go),
-        .btnc(1'b0),
+        .btnc(btnc),
         .btnu(1'b0),
         .btnd(1'b0),
         .sw(sw),
@@ -30,10 +30,15 @@ module main_test();
 
     initial
         begin
+            btnc = 0;
             rst = 0;
             clk = 1;
             go = 0;
             sw[15:0] = 'b0;
+            #518
+            btnc = 1;
+            #30
+            btnc = 0;
             #31000
             sw[15] = 1;
             #100

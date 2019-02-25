@@ -13,7 +13,7 @@ module ROM(addr,sel,data);
 
     parameter ADDR_LEN=32;
     parameter DATA_LEN=32;
-    parameter DATA_NUM=700;
+    parameter DATA_NUM=1024;
     
     input [ADDR_LEN-1:0]addr;
     input sel;
@@ -24,7 +24,7 @@ module ROM(addr,sel,data);
     initial 
         begin
 `ifdef QY_ZHANG
-            $readmemh("/home/qyzhang/ROM_GO.txt",my_rom); 
+            $readmemh("/home/qyzhang/ROM_GO_EXCEPTION.txt",my_rom); 
 `else
             //$readmemh("/media/psf/Home/Desktop/ROM.txt",my_rom);
             $readmemh("//media/psf/Home/Desktop/ROM1.txt", my_rom); 
