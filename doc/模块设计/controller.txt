@@ -1,0 +1,68 @@
+controller模块是CPU必备模块之一，配合数据通路用于产生各种控制信号。
+
+controller模块的输入与输出信号及其含义如下表所示。
+
+      信号            & 类别            & 含义                                   \\
+      op_code         & 输入信号        & ID段指令op字段                         \\
+      func            & 输入信号        & ID段指令func字段                       \\
+      MemToReg        & 输出信号        & load类指令产生，从RAM读出数据到RegFile \\
+      MemWrite        & 输出信号        & store类执行产生，RAM写使能信号         \\
+      alu_src         & 输出信号        & alu部件B的输入选择信号                 \\
+      shamt_src       & 输出信号        & alu部件移位量shamt选择信号             \\
+      RegWrite        & 输出信号        & 寄存器写使能信号                       \\
+      RegDst          & 输出信号        & 寄存器写入地址选择信号                 \\
+      syscall         & 输出信号        & syscall信号                            \\
+      SignedExt       & 输出信号        & 立即数符号扩展选择信号                 \\
+      mem_signed_ext  & 输出信号        & MemDataOut符号扩展选择信号             \\
+      beq             & 输出信号        & beq指令跳转信号                        \\
+      bne             & 输出信号        & bne指令跳转信号                        \\
+      jr              & 输出信号        & jr指令跳转信号                         \\
+      jmp             & 输出信号        & 无条件跳转指令(jr | j | jmp)信号       \\
+      jal             & 输出信号        & jal指令跳转信号                        \\
+      lui             & 输出信号        & lui指令信号                            \\
+      mflo            & 输出信号        & mflo指令信号                           \\
+      hlen            & 输出信号        & lo、hi寄存器写使能信号                 \\
+      mode            & 输出信号        & 仿存RAM模式选择信号                    \\
+      b_branch        & 输出信号        & Branch类指令信号                       \\
+      mfc0            & 输出信号        & mfc0指令信号                           \\
+      mtc0            & 输出信号        & mtc0指令信号                           \\
+      eret            & 输出信号        & eret指令中断返回信号                   \\
+      cp0_we          & 输出信号        & cp0写使能信号                          \\
+
+部分控点说明如下：
+
+      alu_src        & 含义                                                        \\
+      0              & alu部件的B操作数来自RegFile.R2                              \\
+      1              & alu部件的B操作数来自扩展后的立即数imm-ext                   \\
+
+      shamt_src      & 含义                                                        \\
+      0              & alu部件的移位量shamt来自指令字IR[10:6]                      \\
+      1              & alu部件的移位量shamt来自RegFile.R1[4:0]，由可变移位指令产生 \\
+
+      hlen           & 含义                                                        \\
+      0              & 关闭寄存器lo、hi写使能信号                                  \\
+      1              & 打开寄存器lo、hi写使能信号，由乘除指令产生                  \\
+
+      mem_signed_ext & 含义                                                        \\
+      0              & 从RAM读出数据后对数据进行0扩展，lbu和lhu产生                \\
+      1              & 从RAM读出数据后对数据进行符号扩展，lb和lh产生               \\
+
+      mode           & 含义                                                        \\
+      00             & 全字32位仿存模式，lw和sw产生                                \\
+      01             & 字节8位仿存模式，lb、lbu、sb产生                            \\
+      10             & 半字16位仿存模式，lh、lhu、sh产生                           \\
+      11             & 保留，尚未使用                                              \\
+
+      b_branch       & 含义                                                        \\
+      00             & 非branch指令产生                                            \\
+      01             & blez指令产生                                                \\
+      10             & bgtz指令产生                                                \\
+      11             & bltz或bgez指令产生
+
+寄存器写回地址由控点RegDst和jal共同决定，如下：
+
+      jal_RegDst & 寄存器写回地址W#          \\
+      0_0        & 来自指令字IR[20:16]，即rt \\
+      0_1        & 来自指令字IR[15:11]，即rd \\
+      1_0        & W# = 31                   \\
+      1_1        & W# = 31                   \\
