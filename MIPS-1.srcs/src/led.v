@@ -5,8 +5,7 @@
  * led 显示模块
  *
  */
-module Led(pause,
-           led16_b,led16_g,led16_r,led17_b,led17_g,led17_r);
+module Led(pause,led16_b,led16_g,led16_r,led17_b,led17_g,led17_r);
 
     input   pause;
     output          led16_b, led16_g, led16_r, led17_b, led17_g, led17_r;

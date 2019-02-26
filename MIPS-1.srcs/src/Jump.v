@@ -15,19 +15,21 @@
  *      NPC
  *      JUMP
  */
-module Jump(pc,ir,rs,rt,beq,bne,j,jr,SignedExt,B_Branch,npc,jump);
+module Jump(pc,ir,rs,rt,beq,bne,j,jr,SignedExt,B_Branch,npc,jump,epc,interrupt_finish);
     parameter DATA_LEN=32;
     
     input [DATA_LEN-1:0] pc,ir,rs,rt;
     input beq,bne,j,jr,SignedExt;
     input [1:0]B_Branch;
-    output [DATA_LEN-1:0]npc;
-    output jump;
+    input [31:0]epc;
+    input interrupt_finish;
     
+    output [DATA_LEN-1:0]npc;
+    output jump;  
     wire [1:0]sel;
     wire [15:0]imm16;
     wire [25:0]imm26;
-    
+    wire [DATA_LEN-1:0]Eret_type;
     wire [DATA_LEN-1:0]J_type;
     wire [DATA_LEN-1:0]I_type;
     wire [DATA_LEN-1:0]else_type;
@@ -38,11 +40,12 @@ module Jump(pc,ir,rs,rt,beq,bne,j,jr,SignedExt,B_Branch,npc,jump);
     wire blez_e,bgtz_e,bltz_e,bgez_e;
     
     //wire sel0,sel1,sel2,sel3;
-    wire [2:0]out_sel;
+    wire [3:0]out_sel;
     wire [31:0]pc_4;
     
     wire beq_e,bne_e;
     
+   
     assign pc_4=pc+4;
     assign imm16=ir[15:0];
     assign imm26=ir[25:0];
@@ -50,6 +53,7 @@ module Jump(pc,ir,rs,rt,beq,bne,j,jr,SignedExt,B_Branch,npc,jump);
     assign J_type={pc_4[31:28],imm26,2'b00};
     assign I_type=pc_4+{ext_imm[29:0],2'b00};
     assign else_type=pc_4;
+    assign Eret_type=epc;
     assign JR_type=rs;
     
     
@@ -65,12 +69,12 @@ module Jump(pc,ir,rs,rt,beq,bne,j,jr,SignedExt,B_Branch,npc,jump);
     assign beq_e=(rs==rt)?1:0;
     
     
-    
     assign blez_e=($signed(rs)<=0)?1:0; //<=0
     assign bltz_e=($signed(rs)<0)?1:0;//<0
     assign bgez_e=($signed(rs)>=0)?1:0;//>=0
     assign bgtz_e=($signed(rs)>0)?1:0;//>0
     
+    assign out_sel[3]=interrupt_finish;
     assign out_sel[2]=(beq&beq_e)|
                       (bne&bne_e)|
                       (blez&blez_e)|
@@ -78,17 +82,17 @@ module Jump(pc,ir,rs,rt,beq,bne,j,jr,SignedExt,B_Branch,npc,jump);
                       (bltz&bltz_e)|
                       (bgez&bgez_e)
     ;
-    
     assign out_sel[1]=j&(~jr);
     assign out_sel[0]=jr&j;
     
     assign
-           npc=(out_sel==3'b001)?JR_type:
-               (out_sel==3'b010)?J_type:
-               (out_sel==3'b100)?I_type:
-               else_type;          
+           npc=(out_sel==4'b0001)?JR_type:
+               (out_sel==4'b0010)?J_type:
+               (out_sel==4'b0100)?I_type:
+               (out_sel==4'b1000)?Eret_type:
+               else_type;         
     assign
-          jump=(out_sel[0]|out_sel[1]|out_sel[2]);  
+          jump=(out_sel[0]|out_sel[1]|out_sel[2]|out_sel[3]);  
     
     Extender
         extender0(

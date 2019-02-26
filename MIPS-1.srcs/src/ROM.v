@@ -27,7 +27,7 @@ module ROM(addr,sel,data);
             $readmemh("/home/qyzhang/ROM_GO_EXCEPTION_MULTI.txt",my_rom); 
 `else
             //$readmemh("/media/psf/Home/Desktop/ROM.txt",my_rom);
-            $readmemh("/home/longj/MIPS-1/汇编工具及测试用例4.31/rom.txt", my_rom); 
+            $readmemh("/media/psf/Home/Desktop/cpu/ROM1.txt", my_rom); 
 `endif
         end
 

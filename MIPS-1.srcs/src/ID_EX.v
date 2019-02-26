@@ -62,10 +62,12 @@ module ID_EX(
     RegWrite_in, Jal_in, Lui_in, MFLO_in, MemToReg_in, Syscall_in, MemSignExt_in,RegDst_in,//in
     MemWrite_in, MODE_in, Shamt_in, Hlen_in, AluSrcB_in, AluOP_in, ImmExt_in,//in
     ImmExtSft_in, r2_in, r1_in, pc_in, ir_in, Wback_in,//in
+    mfc0_in , mtc0_in , eret_in , cp0_we_in , cp0_dout_in,
     
     RegWrite_out, Jal_out, Lui_out, MFLO_out, MemToReg_out, Syscall_out, MemSignExt_out,RegDst_out,//out
     MemWrite_out, MODE_out, Shamt_out, Hlen_out, AluSrcB_out, AluOP_out, ImmExt_out,//out
-    ImmExtSft_out, r2_out, r1_out, pc_out, ir_out,Wback_out //out 
+    ImmExtSft_out, r2_out, r1_out, pc_out, ir_out,Wback_out,
+    mfc0_out,mtc0_out,eret_out,cp0_we_out, cp0_dout_out//out 
     );
 
     parameter DATA_LEN=32;
@@ -77,7 +79,14 @@ module ID_EX(
     input [3:0]AluOP_in;
     input [4:0] Wback_in; 
     input [DATA_LEN-1:0]ImmExt_in,ImmExtSft_in,r2_in,r1_in,pc_in,ir_in;
+    input mfc0_in , mtc0_in , eret_in , cp0_we_in ;
+    input [31:0]cp0_dout_in;
     
+    output reg [31:0]cp0_dout_out          = 32'b0;
+    output reg mfc0_out                    = 0;
+    output reg mtc0_out                    = 0;
+    output reg eret_out                    = 0;
+    output reg cp0_we_out                  = 0; 
     output reg RegWrite_out                = 0;
     output reg Jal_out                     = 0;
     output reg Lui_out                     = 0;
@@ -108,7 +117,8 @@ module ID_EX(
                 {RegWrite_out, Jal_out, Lui_out, MFLO_out, MemToReg_out, Syscall_out, MemSignExt_out,RegDst_out,
                 MemWrite_out,Shamt_out, Hlen_out, AluSrcB_out,
                 MODE_out, AluOP_out, Wback_out,ImmExt_out,
-                ImmExtSft_out,r2_out,r1_out,pc_out,ir_out}<=0;
+                ImmExtSft_out,r2_out,r1_out,pc_out,ir_out,
+                mfc0_out,mtc0_out,eret_out,cp0_we_out,cp0_dout_out}<=0;
             end
             else if(stall)
                 begin
@@ -119,12 +129,15 @@ module ID_EX(
                     {RegWrite_out, Jal_out, Lui_out, MFLO_out, MemToReg_out, Syscall_out, MemSignExt_out,RegDst_out,
                     MemWrite_out,Shamt_out, Hlen_out, AluSrcB_out,
                     MODE_out, AluOP_out, Wback_out,ImmExt_out,
-                    ImmExtSft_out,r2_out,r1_out,pc_out,ir_out}
+                    ImmExtSft_out,r2_out,r1_out,pc_out,ir_out,
+                    mfc0_out,mtc0_out,eret_out,cp0_we_out,cp0_dout_out
+                    }
                     <=
                     {RegWrite_in, Jal_in, Lui_in, MFLO_in, MemToReg_in, Syscall_in, MemSignExt_in,RegDst_in,
                     MemWrite_in, Shamt_in, Hlen_in, AluSrcB_in,
                     MODE_in,AluOP_in,Wback_in,ImmExt_in,
-                    ImmExtSft_in,r2_in,r1_in,pc_in,ir_in};   
+                    ImmExtSft_in,r2_in,r1_in,pc_in,ir_in,
+                    mfc0_in , mtc0_in , eret_in , cp0_we_in , cp0_dout_in};   
                 end
         end   
 endmodule
