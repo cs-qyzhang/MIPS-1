@@ -66,7 +66,7 @@ module Input(btnl,btnr,btnc,btnu,btnd,sw,
                 hardware_interrupt[0] = 0;
 
             if (btnc)
-                hardware_interrupt_reg[1] = 1;
+                hardware_interrupt_reg[1] =1'b1;
             else if (hardware_interrupt_reg[1])
                 begin
                     hardware_interrupt[1]     = 1'b1;

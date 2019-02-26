@@ -161,7 +161,7 @@ module MainRedirectInterrupt(
     wire nmi_out;
     wire interrupt;
     wire interrupt_begin;
-    wire interrupt_en_in , interrupt_en_out;
+    wire interrupt_en;
     wire [5:0]hardware_interrupt;
     wire [1:0]software_interrupt;
     wire [`ADDR_WIDTH-1:0]exception_handle_addr;
@@ -169,12 +169,13 @@ module MainRedirectInterrupt(
     wire [31:0]ebase;
     wire [7:0]cause_ip_out,cause_ip_in,status_im;
     wire [31:0]epc;
-
+    wire interrupt_finish_after;
+    
     assign led[0]  = cp;
     assign led[1]  = interrupt;
     assign led[2]  = interrupt_begin;
     assign led[3]  = eret_wb;
-    assign led[4]  = interrupt_en_in;
+    assign led[4]  = interrupt_en;
     assign led[5]  = can_jump;
     assign led[6]  = eret_wb;
     assign led[7]  = 0;
@@ -198,8 +199,9 @@ module MainRedirectInterrupt(
         .freq(freq)
     );
     assign go = btnr;
-    assign rst = btnl;
+    //assign rst = btnl;
 `endif
+
 
     assign next_pc = (can_jump) ? pc_out : (pc_if + 32'd4);
     assign pcvalid = ~pause;
@@ -597,7 +599,8 @@ module ID_EX(
         .show_data(show_data)
     );
 
-    assign RegDin = (mflo_wb) ? lo_out_wb
+    assign RegDin = (mfc0_wb)  ? cp0_dout_wb
+                    :(mflo_wb) ? lo_out_wb
                     : (lui_wb) ? imm_ext_sft_wb
                     : (jal_wb) ? (pc_wb + 32'd4)
                     : (MemToReg_wb) ? mem_out_wb
@@ -681,15 +684,38 @@ module ID_EX(
            .cause_ip_in(cause_ip_out),
            .cause_ip_out(cause_ip_in),
            .ebase(ebase),
-           .interrupt_en_in(interrupt_en_out),
-           .interrupt_en_out(interrupt_en_in),
+           .interrupt_en(interrupt_en),//out
            .nmi_in(nmi_out),
            .nmi_out(nmi_in),
            .epc_in(pc_out),
            .epc_out(epc),
            .interrupt_begin(interrupt_begin),
+           .interrupt_finish(interrupt_finish_after),//in
            .interrupt(interrupt)
        );
+       /*
+       CP0 cp0(
+               .clk(cp),
+               .rst(rst),
+               .we(cp0_we),
+               .din(cp0_din),
+               .dout(cp0_dout),
+               .rw(cp0_rw),
+               .ra(cp0_ra),
+               .status_im(status_im),
+               .cause_ip_in(cause_ip_out),
+               .cause_ip_out(cause_ip_in),
+               .ebase(ebase),
+               .interrupt_en(interrupt_en),
+               .nmi_in(nmi_out),
+               .nmi_out(nmi_in),
+               .epc_in(npc),
+               .epc_out(epc),
+               .interrupt_begin(interrupt_begin),
+               .interrupt_finish(interrupt_finish_after),
+               .interrupt(interrupt)
+           );
+       */
    
      assign software_interrupt = 0;
        
@@ -702,15 +728,37 @@ module ID_EX(
            .ebase(ebase),
            .hw(hardware_interrupt),
            .sw(software_interrupt),
-           .interrupt_en_in(interrupt_en_in),
-           .interrupt_en_out(interrupt_en_out),
+           .interrupt_en(interrupt_en),//in
            .interrupt_begin(interrupt_begin),
            .interrupt_finish(eret_wb),
+           .interrupt_finish_after(interrupt_finish_after),//out
            .interrupt(interrupt),
-           .exception_handle_addr(exception_handle_addr),
-           .interrupt_disable(interrupt_disable),
-           .interrupt_enable(interrupt_enable)
+           .exception_handle_addr(exception_handle_addr)
        );
 
+
+/*
+    InterruptGeneration interrupt_generation(
+        .clk(cp),
+        .rst(rst),
+        .cause_ip_in(cause_ip_in),
+        .cause_ip_out(cause_ip_out),
+        .status_im(status_im),
+        .ebase(ebase),
+        .hw(hardware_interrupt),
+        .sw(software_interrupt),
+        .interrupt_en(interrupt_en),
+        .interrupt_begin(interrupt_begin),
+        .interrupt_finish(interrupt_finish),
+        .interrupt_finish_after(interrupt_finish_after),
+        .interrupt(interrupt),
+        .exception_handle_addr(exception_handle_addr)
+    );
+*/
+        Rst rsts(
+            .clk(cp),
+            .rst_button(btnl),
+            .rst(rst)
+        );
 
 endmodule

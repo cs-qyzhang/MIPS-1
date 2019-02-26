@@ -19,9 +19,9 @@ module main_redirectInterrupt_test();
         .seg(seg),
         .btnl(rst),
         .btnr(go),
-        .btnc(1'b0),
-        .btnu(1'b0),
-        .btnd(1'b0),
+        .btnc(btnc),
+        .btnu(btnu),
+        .btnd(btnd),
         .sw(sw),
         .led(led),
         .led16_b(led16_b),
@@ -43,7 +43,7 @@ module main_redirectInterrupt_test();
             sw[15:0] = 'b0;
             #1000
             btnc=1;
-            #5 btnc=0;
+            #12 btnc=0;
             #100
             sw[15] = 0;
             sw[14] = 1;

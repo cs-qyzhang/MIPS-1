@@ -19,17 +19,17 @@ module MipsRAM(addr, din, mode, we, clk, rst, dout, mem_signed_ext);
     input[1:0]      mode;
     input           we, clk, rst, mem_signed_ext;
 
-    output [31:0]dout;
+    output reg [31:0]dout;
 
     (* ram_style = "block" *)reg[7:0]    ram[DATA_NUM-1:0];
-    wire[7:0]    ext_data;
+    reg [7:0]    ext_data;
     integer i;
     
-    assign ext_data    = mem_signed_ext ? {8{ram[addr][7]}} : 8'b0;
-    assign dout[7:0]   = ram[addr + ((mode == 2'b00) ? 'd3 : ((mode == 2'b10) ? 'd1 : 'd0))];
-    assign dout[15:8]  = (mode == 2'b01) ? ext_data : ram[addr + ((mode == 2'b00) ? 'd2 : 'd0)];
-    assign dout[23:16] = (mode == 2'b01 || mode == 2'b10) ? ext_data : ram[addr + 'd1];
-    assign dout[31:24] = (mode == 2'b00) ? ram[addr] : ext_data;
+    //assign ext_data    = mem_signed_ext ? {8{ram[addr][7]}} : 8'b0;
+    //assign dout[7:0]   = ram[addr + ((mode == 2'b00) ? 'd3 : ((mode == 2'b10) ? 'd1 : 'd0))];
+    //assign dout[15:8]  = (mode == 2'b01) ? ext_data : ram[addr + ((mode == 2'b00) ? 'd2 : 'd0)];
+    //assign dout[23:16] = (mode == 2'b01 || mode == 2'b10) ? ext_data : ram[addr + 'd1];
+    //assign dout[31:24] = (mode == 2'b00) ? ram[addr] : ext_data;
 
     always @(negedge clk)
         begin
@@ -63,12 +63,11 @@ module MipsRAM(addr, din, mode, we, clk, rst, dout, mem_signed_ext);
                 end
             else
                 begin
-                ;
-                    //ext_data    = mem_signed_ext ? {8{ram[addr][7]}} : 8'b0;
-                    //dout[7:0]   = ram[addr + ((mode == 2'b00) ? 'd3 : ((mode == 2'b10) ? 'd1 : 'd0))];
-                    //dout[15:8]  = (mode == 2'b01) ? ext_data : ram[addr + ((mode == 2'b00) ? 'd2 : 'd0)];
-                    //dout[23:16] = (mode == 2'b01 || mode == 2'b10) ? ext_data : ram[addr + 'd1];
-                    //dout[31:24] = (mode == 2'b00) ? ram[addr] : ext_data;
+                    ext_data    = mem_signed_ext ? {8{ram[addr][7]}} : 8'b0;
+                    dout[7:0]   = ram[addr + ((mode == 2'b00) ? 'd3 : ((mode == 2'b10) ? 'd1 : 'd0))];
+                    dout[15:8]  = (mode == 2'b01) ? ext_data : ram[addr + ((mode == 2'b00) ? 'd2 : 'd0)];
+                    dout[23:16] = (mode == 2'b01 || mode == 2'b10) ? ext_data : ram[addr + 'd1];
+                    dout[31:24] = (mode == 2'b00) ? ram[addr] : ext_data;
                 end
         end
 
