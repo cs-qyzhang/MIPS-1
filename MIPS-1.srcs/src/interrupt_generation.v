@@ -12,7 +12,7 @@
  */
 module  InterruptGeneration(clk,rst,cause_ip_in,status_im,ebase,hw,sw,interrupt_finish_after,
                             interrupt_finish,interrupt,cause_ip_out,interrupt_en,
-                            exception_handle_addr,interrupt_begin,interrupt_state);
+                            exception_handle_addr,interrupt_begin);
 
     parameter   ADDR_WIDTH = `ADDR_WIDTH;
 
@@ -26,10 +26,10 @@ module  InterruptGeneration(clk,rst,cause_ip_in,status_im,ebase,hw,sw,interrupt_
     output reg              interrupt = 0;
     output reg              interrupt_begin;
     output reg[ADDR_WIDTH-1:0]exception_handle_addr;
-    output reg[3:0]         interrupt_state;
     output reg              interrupt_finish_after;
-    reg[3:0]                interrupt_now[3:0];
     
+    reg[3:0]                interrupt_now[3:0];
+    reg[3:0]                interrupt_state;
     integer                 i;
 
     always @(negedge clk)

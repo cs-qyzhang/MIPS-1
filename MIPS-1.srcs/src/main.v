@@ -72,7 +72,7 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
     wire        interrupt_en, nmi_in, nmi_out, interrupt;
     wire[31:0]ebase;
     wire[7:0]   cause_ip_in, cause_ip_out, status_im;
-    wire            cp0_we;
+    wire        cp0_we;
     wire[4:0]   cp0_ra, cp0_rw;
     wire[31:0]  cp0_din, cp0_dout, epc;
     wire[1:0]   software_interrupt;
@@ -137,7 +137,6 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
         .epc_out(epc),
         .interrupt_begin(interrupt_begin),
         .interrupt_finish(interrupt_finish_after),
-        .interrupt_state(interrupt_state),
         .interrupt(interrupt)
     );
 
@@ -150,7 +149,6 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
         .ebase(ebase),
         .hw(hardware_interrupt),
         .sw(software_interrupt),
-        .interrupt_state(interrupt_state),
         .interrupt_en(interrupt_en),
         .interrupt_begin(interrupt_begin),
         .interrupt_finish(interrupt_finish),
@@ -383,8 +381,8 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
                          (mfc0 ? cp0_dout : result))));
 
     assign show_data = (show_type == `SHOW_ALL_CYC) ? {24'b0,status_im} :
-                                       ( (show_type == `SHOW_BRANCH_NUM) ? branch_num : 
-                                       ( (show_type == `SHOW_JMP_NUM) ? jmp_num : all_cyc) );
+                                       ((show_type == `SHOW_BRANCH_NUM) ? branch_num : 
+                                       ((show_type == `SHOW_JMP_NUM) ? jmp_num : all_cyc) );
 
     assign interrupt_finish = eret;
     assign cp0_rw = rd;

@@ -3,7 +3,7 @@
 
 module CP0(clk,rst,we,din,dout,rw,ra,
            status_im,cause_ip_in,cause_ip_out,ebase,
-           interrupt_en,nmi_in,nmi_out,interrupt_state,
+           interrupt_en,nmi_in,nmi_out,
            epc_in,epc_out,interrupt_begin,interrupt_finish,interrupt);
 
     input       clk, rst, we, interrupt_begin, interrupt_finish, interrupt;
@@ -12,7 +12,6 @@ module CP0(clk,rst,we,din,dout,rw,ra,
     input       nmi_in;
     input[31:0] epc_in;
     input[7:0]  cause_ip_in;
-    input[3:0]  interrupt_state;
 
     output[31:0]dout, ebase;
     output[7:0] cause_ip_out, status_im;
@@ -44,16 +43,14 @@ module CP0(clk,rst,we,din,dout,rw,ra,
                 begin
                     CP0_reg[`CP0_CAUSE][`CAUSE_IP7:`CAUSE_IP0] = cause_ip_in[7:0];
                     CP0_reg[`CP0_STATUS][`STATUS_NMI]          = nmi_in;
-                    
+
                     if (interrupt_begin)
                         begin
                             CP0_reg[`CP0_EPC]                = epc_in;
                             CP0_reg[`CP0_STATUS][`STATUS_IE] = 0;
                         end
-                    else if (interrupt_finish && interrupt_state == 0)
+                    else if (interrupt_finish)
                         CP0_reg[`CP0_STATUS][`STATUS_IE] = 1;
-                    else if (interrupt_finish && interrupt_state != 0)
-                            CP0_reg[`CP0_STATUS][`STATUS_IE] = 0;
                     else
                         ;
 
