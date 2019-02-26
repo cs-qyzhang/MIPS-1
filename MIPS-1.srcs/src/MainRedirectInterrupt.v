@@ -581,7 +581,7 @@ module ID_EX(
         .cp0_dout_out(cp0_dout_wb)
     );
 
-    assign show_data = (show_type == `SHOW_ALL_CYC) ? all_cyc_num :
+    assign show_data = (show_type == `SHOW_ALL_CYC) ? status_im :
                                        ( (show_type == `SHOW_BRANCH_NUM) ? load_use_num: 
                                        ( (show_type == `SHOW_JMP_NUM) ? jmp_num : all_cyc_num) );
     Syscall syacall_unit(
@@ -679,7 +679,7 @@ module ID_EX(
        CP0 cp0(
            .clk(cp),
            .rst(rst),
-           .we(cp0_we_wb),
+           .we(cp0_we_id),//wb 阶段?
            .din(r2_v0_id),
            .dout(cp0_dout_id),
            .rw(ir_id[15:11]),
