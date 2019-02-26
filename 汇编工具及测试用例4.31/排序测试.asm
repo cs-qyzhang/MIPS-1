@@ -6,7 +6,7 @@ sort_init:
  add $s0,$zero,$zero   
  addi $s1,$zero,60   #≈≈–Ú«¯º‰
 sort_loop:
- lw $s3,0($s0)     
+ lw $s3,0($s0)
  lw $s4,0($s1)
  slt $t0,$s3,$s4
  beq $t0,$0,sort_next   #Ωµ–Ú≈≈–Ú

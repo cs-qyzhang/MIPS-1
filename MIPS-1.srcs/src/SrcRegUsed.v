@@ -31,6 +31,8 @@ module SrcRegUsed(
   // wire And, Or, Nor;
   // wire slt, sltu;
   wire j;
+  wire jal;
+  wire jr;
   wire addi;
   wire andi;
   wire addiu;
@@ -45,6 +47,7 @@ module SrcRegUsed(
   wire lui;
   wire sltiu;
   // wire multu, divu;
+  wire mflo;
   wire lb, lbu, lh, lhu;
   // wire sb, sh;
   wire blez, bgtz, bltz, bgez;
