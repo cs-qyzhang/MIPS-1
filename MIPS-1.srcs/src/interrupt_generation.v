@@ -32,7 +32,7 @@ module  InterruptGeneration(clk,rst,cause_ip_in,status_im,ebase,hw,sw,interrupt_
     reg[3:0]                interrupt_state;
     integer                 i;
 
-    always @(negedge clk)
+    always @(posedge clk)
         begin
             interrupt_begin = 0;
             interrupt_finish_after = 0;

@@ -86,10 +86,10 @@ module Jump(pc,ir,rs,rt,beq,bne,j,jr,SignedExt,B_Branch,npc,jump,epc,interrupt_f
     assign out_sel[0]=jr&j;
     
     assign
-           npc=(out_sel==4'b0001)?JR_type:
-               (out_sel==4'b0010)?J_type:
-               (out_sel==4'b0100)?I_type:
-               (out_sel==4'b1000)?Eret_type:
+           npc=(out_sel[3]==1'b1)?Eret_type
+              :(out_sel[2]==1'b1)?I_type
+              :(out_sel[1]==1'b1)?J_type
+              :(out_sel[0]==1'b1)?JR_type:
                else_type;         
     assign
           jump=(out_sel[0]|out_sel[1]|out_sel[2]|out_sel[3]);  

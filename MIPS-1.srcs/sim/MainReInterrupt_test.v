@@ -44,12 +44,16 @@ module main_redirectInterrupt_test();
             #1000
             btnc=1;
             #12 btnc=0;
-            #100
-            sw[15] = 0;
-            sw[14] = 1;
-            #100
-            sw[14] = 0;
-            sw[13] = 1;
+            
+            # 50
+             btnu=1;
+            #12
+            btnu=0;
+            //sw[15] = 0;
+            //sw[14] = 1;
+         
+            //sw[14] = 0;
+            //sw[13] = 1;
             
         end
         

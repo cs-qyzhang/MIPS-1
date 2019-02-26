@@ -32,7 +32,6 @@ module Input(btnl,btnr,btnc,btnu,btnd,sw,
     reg[5:0]        hardware_interrupt_reg = 0;
 
     assign go = btnr;
-    assign rst = btnl;
     assign pause_and_show = |sw[15:13];
     assign show_type = sw[15] ? `SHOW_ALL_CYC : (sw[14] ? `SHOW_BRANCH_NUM : (sw[13] ? `SHOW_JMP_NUM : `SHOW_ALL_CYC));
 

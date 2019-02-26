@@ -206,7 +206,7 @@ module MainRedirectInterrupt(
     assign next_pc = (can_jump) ? pc_out : (pc_if + 32'd4);
     assign pcvalid = ~pause;
     Register reg_pc(
-        .data_in(next_pc),
+        .data_in(interrupt_begin ? exception_handle_addr : next_pc),
         .data_out(pc_if),
         .clk(cp),
         .rst(rst),
@@ -221,7 +221,7 @@ module MainRedirectInterrupt(
 
     IF_ID ifIdPiped(
         .clk(cp),
-        .rst(rst|can_jump|interrupt_begin |eret_wb),
+        .rst(rst|can_jump|interrupt_begin),
         .stall(load_use | pause),
         .pc_in(pc_if),
         .ir_in(ir_if),
@@ -296,7 +296,7 @@ module MainRedirectInterrupt(
         .ra(id_r1),
         .rb(id_r2),
         .rw(wb_wb),
-        .we(RegWrite_wb),
+        .we(RegWrite_wb&(~interrupt_begin)),
         .din(RegDin),
         .R1(reg_r1),
         .R2(reg_r2)
@@ -354,7 +354,7 @@ module MainRedirectInterrupt(
         .npc(pc_out),
         .jump(can_jump),
         .epc(epc),
-        .interrupt_finish(eret_wb)
+        .interrupt_finish(eret_id)
     );
 
    
@@ -372,7 +372,7 @@ module ID_EX(
 */
     ID_EX idExPiped(
         .clk(cp),
-        .rst(rst | load_use |interrupt_begin |eret_wb),
+        .rst(rst | load_use |interrupt_begin),
         .stall(pause),
         .RegWrite_in(RegWrite_id),
         .Jal_in(jal_id),
@@ -463,7 +463,7 @@ module ID_EX(
 
     EX_MEM exMemPiped(
         .clk(cp),
-        .rst(rst|interrupt_begin |eret_wb),
+        .rst(rst|interrupt_begin),
         .stall(pause),
         .RegWrite_in(RegWrite_ex),
         .Jal_in(jal_ex),
@@ -530,7 +530,7 @@ module ID_EX(
 
     MEM_WB memWbPiped(
         .clk(cp),
-        .rst(rst|interrupt_begin |eret_wb),
+        .rst(rst|interrupt_begin ),
         .stall(pause),
         .RegWrite_in(RegWrite_mem),
         .Jal_in(jal_mem),
@@ -672,6 +672,10 @@ module ID_EX(
      assign nmi_out = 0;
      assign interrupt_enable = 0;
      assign interrupt_disable = 0;
+     wire [31:0] save_pc;
+     assign save_pc=(pc_wb!=32'b0)?pc_wb:
+                    (pc_mem!=32'b0)?pc_mem:
+                    pc_ex; 
        CP0 cp0(
            .clk(cp),
            .rst(rst),
@@ -687,7 +691,7 @@ module ID_EX(
            .interrupt_en(interrupt_en),//out
            .nmi_in(nmi_out),
            .nmi_out(nmi_in),
-           .epc_in(pc_out),
+           .epc_in(save_pc),
            .epc_out(epc),
            .interrupt_begin(interrupt_begin),
            .interrupt_finish(interrupt_finish_after),//in

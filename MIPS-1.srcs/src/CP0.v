@@ -29,7 +29,7 @@ module CP0(clk,rst,we,din,dout,rw,ra,
     assign  ebase             = CP0_reg[`CP0_EBASE];
     assign  interrupt_en      = CP0_reg[`CP0_STATUS][`STATUS_IE];
     
-    always @(posedge clk)
+    always @(negedge clk)
         begin
             if (rst)
                 begin
