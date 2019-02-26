@@ -422,7 +422,7 @@ module ID_EX(
         .eret_in(eret_id),
         .cp0_we_in(cp0_we_id),
         .cp0_dout_in(cp0_dout_id),
-        
+    
         .mfc0_out(mfc0_ex),
         .mtc0_out(mtc0_ex),
         .eret_out(eret_ex),
@@ -679,10 +679,10 @@ module ID_EX(
        CP0 cp0(
            .clk(cp),
            .rst(rst),
-           .we(cp0_we_id),//wb 阶段?
-           .din(r2_v0_id),
+           .we(cp0_we_wb),//wb 阶段?
+           .din(r2_v0_wb),
            .dout(cp0_dout_id),
-           .rw(ir_id[15:11]),
+           .rw(ir_wb[15:11]),
            .ra(ir_id[15:11]),
            .status_im(status_im),
            .cause_ip_in(cause_ip_out),
