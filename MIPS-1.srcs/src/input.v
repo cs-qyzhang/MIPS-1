@@ -55,7 +55,7 @@ module Input(btnl,btnr,btnc,btnu,btnd,sw,
         
     always @(posedge clk)
         begin
-            if (btnc)
+            if (btnu)
                 hardware_interrupt_reg[0] = 1;
             else if (hardware_interrupt_reg[0])
                 begin
@@ -65,7 +65,7 @@ module Input(btnl,btnr,btnc,btnu,btnd,sw,
             else
                 hardware_interrupt[0] = 0;
 
-            if (btnu)
+            if (btnc)
                 hardware_interrupt_reg[1] = 1;
             else if (hardware_interrupt_reg[1])
                 begin

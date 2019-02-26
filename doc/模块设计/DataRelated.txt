@@ -1,0 +1,30 @@
+DataRelated模块用于重定向流水线中，用于检测ID段待使用数据是否与EX段和MEM段存在数据相关或者load-use相关。
+
+DataRelated模块的输入与输出信号及其含义如下表所示。
+
+      信号            & 类别            & 含义                                    \\
+      OP              & 输入信号        & ID段指令op字段                          \\
+      FUNC            & 输入信号        & ID段指令func字段                        \\
+      ex_regwrite     & 输入信号        & EX段寄存器写回信号                      \\
+      mem_regwrite    & 输入信号        & MEM段寄存器写回信号                     \\
+      id_r1           & 输入信号        & ID段RegFile的R1读入地址                 \\
+      id_r2           & 输入信号        & ID段RegFile的R2读入地址                 \\
+      mem_memtoreg    & 输入信号        & MEM段load信号                           \\
+      ex_memtoreg     & 输入信号        & EX段load信号                            \\
+      ex_wb           & 输入信号        & EX段寄存器写回地址                      \\
+      mem_wb          & 输入信号        & MEM段寄存器写回地址                     \\
+      r1_forward      & 输出信号        & ID段源寄存器R1数据选择信号              \\
+      r2_forward      & 输出信号        & ID段源寄存器R2数据选择信号              \\
+      load_use        & 输出信号        & ID段数据与EX段、MEM段是否为Load-Use相关 \\
+
+输出注意事项如下（以r1_forward为例,r2_forward同理）：
+
+      r1_forward      & 含义                        \\
+      00              & ID段与EX、MEM段均无数据相关 \\
+      01              & ID段仅与EX段有数据相关      \\
+      10              & ID段仅与MEM段有数据相关     \\
+      11              & ID段与EX、MEM段均有数据相关 \\
+
+r1_forward = 11时，应选择最近的一段流水线数据重定向，即EX阶段。
+
+load_use信号为1表示发生了load_use相关，此时不应该数据重定向，而是应该暂停PC、IF段和ID段，往后插入气泡，等待数据从WB阶段写回。
