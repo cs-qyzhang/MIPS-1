@@ -81,6 +81,7 @@ module  InterruptGeneration(clk,rst,cause_ip_in,status_im,ebase,hw,sw,
             else
                 interrupt_en_out = 1;
 
+
             if (rst)
                 begin
                     interrupt             = 0;
@@ -89,6 +90,7 @@ module  InterruptGeneration(clk,rst,cause_ip_in,status_im,ebase,hw,sw,
                     interrupt_begin       = 0;
                     interrupt_now         = 0;
                 end
+                
             else if (interrupt_en_out)
                 begin
                     if (cause_ip_out[7] && status_im[7] && (interrupt_now != 7))
@@ -122,6 +124,7 @@ module  InterruptGeneration(clk,rst,cause_ip_in,status_im,ebase,hw,sw,
                             interrupt_en_out      = 0;
                             interrupt_begin       = 1;
                             interrupt_now         = 4;
+                            
                         end
                     else if (cause_ip_out[3] && status_im[3] && (interrupt_now != 3))
                         begin

@@ -136,6 +136,7 @@ module Main(clk,btnl,btnr,btnc,btnu,btnd,sw,
 
     assign interrupt_enable = 0;
     assign interrupt_disable = 0;
+    
     InterruptGeneration interrupt_generation(
         .clk(cp),
         .rst(rst),
